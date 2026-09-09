@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consta · laboratorio</title>
+<style>
+  :root{
+    --papel:#F6F5F8; --hoja:#fff; --tinta:#16151C; --media:#4B4857; --suave:#6E6B7C;
+    --sello:#4A3AA8; --sello-tenue:#EDEAF9; --sello-borde:#CFC7F0;
+    --ambar:#8A5B00; --ambar-tenue:#FBF1DD; --ambar-borde:#E6CFA0;
+    --rojo:#A8332B; --rojo-tenue:#F8EBEA; --linea:#DEDAE6; --linea-f:#C6C0D4;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--tinta);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
+  header{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--linea);background:var(--hoja)}
+  header h1{font:400 26px Georgia,serif;margin:0;letter-spacing:-.01em}
+  header .lema{color:var(--sello);font-style:italic}
+  header .modelo{margin-left:auto;font-family:Consolas,monospace;font-size:12px;color:var(--suave)}
+  main{display:grid;grid-template-columns:minmax(360px,1fr) minmax(420px,1.3fr);gap:20px;padding:20px 24px;max-width:1400px;margin:0 auto}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  .tarjeta{background:var(--hoja);border:1px solid var(--linea);border-radius:6px;padding:18px 20px;margin-bottom:16px}
+  h2{font:400 20px Georgia,serif;margin:0 0 12px}
+  h3{font-size:17.5px;margin:18px 0 6px}
+  label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave);font-weight:700;margin:12px 0 4px}
+  input[type=text],textarea{width:100%;font:inherit;padding:9px 11px;border:1px solid var(--linea-f);border-radius:4px;background:var(--papel);color:var(--tinta)}
+  textarea{min-height:88px;resize:vertical}
+  .fila{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  button{font:inherit;font-weight:600;padding:9px 14px;border-radius:4px;border:1px solid var(--sello);background:var(--sello);color:#fff;cursor:pointer}
+  button.sec{background:var(--hoja);color:var(--sello)}
+  button.peligro{background:var(--hoja);color:var(--rojo);border-color:var(--rojo);font-weight:500;font-size:13px;padding:6px 10px}
+  button:disabled{opacity:.45;cursor:default}
+  button.grabando{background:var(--rojo);border-color:var(--rojo);animation:pulso 1s infinite}
+  @keyframes pulso{50%{opacity:.6}}
+  .estado{font-size:13px;color:var(--suave);min-height:18px;margin-top:8px}
+  .oculto{display:none}
+  select{font:inherit;padding:7px 9px;border:1px solid var(--linea-f);border-radius:4px;background:var(--papel);color:var(--tinta);max-width:320px}
+  .nivel{flex:1;min-width:120px;height:10px;background:var(--linea);border-radius:5px;overflow:hidden}
+  .nivel i{display:block;height:100%;width:100%;background:var(--sello);transform-origin:left;transform:scaleX(0);transition:transform .08s linear}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave);padding:6px 8px;border-bottom:1px solid var(--linea-f)}
+  td{padding:8px;border-bottom:1px solid var(--linea);vertical-align:top}
+  tr.clic{cursor:pointer} tr.clic:hover td{background:var(--sello-tenue)}
+  tr.abierta td{background:var(--sello-tenue)}
+  .mono{font-family:Consolas,monospace;font-variant-numeric:tabular-nums}
+  .chip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:3px;border:1px solid;margin-right:6px}
+  .chip.Alta{color:var(--sello);background:var(--sello-tenue);border-color:var(--sello-borde)}
+  .chip.Media,.chip.Baja{color:var(--ambar);background:var(--ambar-tenue);border-color:var(--ambar-borde)}
+  .chip.Conflicto{color:var(--rojo);background:var(--rojo-tenue);border-color:var(--rojo)}
+  .pugna{font-family:Consolas,monospace;font-size:12px;color:var(--ambar);background:var(--ambar-tenue);border:1px solid var(--ambar-borde);border-radius:3px;padding:0 6px;margin-left:5px}
+  .porque{font-size:12.5px;color:var(--suave)}
+  .aviso{margin-top:12px;padding:10px 12px;border-radius:4px;font-size:14px}
+  .aviso.descartes{background:var(--ambar-tenue);border:1px solid var(--ambar-borde);color:var(--tinta)}
+  .aviso.pregunta{background:var(--sello-tenue);border:1px solid var(--sello-borde)}
+  .aviso.pregunta b{color:var(--sello)}
+  .rastro{margin:0 0 14px;padding:10px 12px;background:var(--papel);border:1px solid var(--linea);border-radius:4px;font-size:13px}
+  .rastro .r{padding:7px 0;border-bottom:1px dashed var(--linea)} .rastro .r:last-child{border-bottom:0}
+  .rastro .r b{font-family:Consolas,monospace;font-weight:500;color:var(--sello)}
+  .rastro .r i{color:var(--media)}
+  details{margin-top:10px;font-size:13px} summary{cursor:pointer;color:var(--suave)}
+  pre{background:var(--papel);padding:10px;border-radius:4px;overflow:auto;font-size:12px}
+  .vacio{color:var(--suave);font-style:italic}
+  .cliente-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .cliente-cab small{color:var(--suave)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Consta</h1>
+  <span class="lema">laboratorio · que conste quién lo vio</span>
+  <span class="modelo" id="modelo">cargando…</span>
+</header>
+
+<main>
+  <section>
+    <div class="tarjeta">
+      <h2>Captura</h2>
+      <label for="observador">Quién observa</label>
+      <input type="text" id="observador" placeholder="Field User 01" value="Field User 01">
+      <label for="texto">Lo que vio (dictado o escrito)</label>
+      <textarea id="texto" placeholder="Estoy en Hospital DemoCare Pacific, en Panamá. Tienen dos resonadores y un tomógrafo. Uno de los resonadores parece de unos ocho años."></textarea>
+      <div class="fila">
+        <button id="grabar">🎙 Grabar</button>
+        <button class="sec" id="subir">Subir audio</button>
+        <input type="file" id="archivo" accept=".wav,.mp3,audio/wav,audio/mpeg" class="oculto">
+        <button class="sec" id="analizar">Analizar texto</button>
+        <button class="sec" id="foto">📷 Foto de la placa</button>
+        <input type="file" id="imagen" accept="image/*" capture="environment" class="oculto">
+      </div>
+      <div class="fila" style="margin-top:12px">
+        <label for="mic" style="margin:0">Micrófono</label>
+        <select id="mic"><option value="">predeterminado</option></select>
+        <div class="nivel" title="nivel del micrófono mientras grabas"><i id="nivelBarra"></i></div>
+      </div>
+      <div class="estado" id="estado"></div>
+    </div>
+
+    <div class="tarjeta oculto" id="tarjetaPlaca">
+      <h2>Placa del equipo</h2>
+      <div id="placaCampos"></div>
+      <div class="fila">
+        <button id="aplicarPlaca">Aplicar a la observación</button>
+        <span class="estado" id="placaEstado"></span>
+      </div>
+      <details><summary>Lo que leyó VisionPsy, tal cual</summary><pre id="placaTexto"></pre></details>
+    </div>
+
+    <div class="tarjeta oculto" id="resultado">
+      <h2>Lo que entendió</h2>
+      <div id="transcripcion" class="estado"></div>
+      <div id="lugar" style="margin:6px 0 10px"></div>
+      <table>
+        <thead><tr><th>Equipo</th><th>Cantidad</th><th>Marca</th><th>Modelo</th><th>Antigüedad</th></tr></thead>
+        <tbody id="equipos"></tbody>
+      </table>
+      <div id="descartes" class="aviso descartes oculto"></div>
+      <div id="pregunta" class="aviso pregunta"></div>
+      <div class="fila">
+        <button id="guardar">Guardar observación</button>
+        <span class="estado" id="guardado"></span>
+      </div>
+      <details><summary>JSON crudo del modelo y verificado</summary><pre id="crudo"></pre></details>
+    </div>
+  </section>
+
+  <section>
+    <div class="tarjeta">
+      <h2>Cliente 360</h2>
+      <div id="base"><p class="vacio">Todavía no hay observaciones guardadas.</p></div>
+      <div class="fila" style="justify-content:flex-end;margin-top:18px">
+        <button class="peligro" id="reiniciar">Borrar todas las observaciones</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const estado = (m) => { $("estado").textContent = m; };
+let ultimo = null; // { texto, fuente, json }
+let ultimoResultado = null; // la respuesta entera de /extraer, para repintar tras la placa
+let abierta = null; // fila del 360 abierta (cliente|modalidad)
+
+// ---------- red ----------
+const post = (ruta, cuerpo, tipo = "application/json") => fetch(ruta, { method: "POST", headers: { "content-type": tipo }, body: cuerpo }).then(async (r) => {
+  const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j;
+});
+
+// ---------- audio: micrófono -> WAV 16 kHz mono ----------
+async function blobAWav16k(blob) {
+  // Remuestrea a 16 kHz con el remuestreador del navegador (con filtro antialias). El
+  // remuestreo lineal a mano que había antes metía aliasing, y eso degrada a Whisper.
+  const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+  const buf = await ctx.decodeAudioData(await blob.arrayBuffer());
+  const n = buf.length, ch = buf.numberOfChannels, fs = buf.sampleRate, mono = new Float32Array(n);
+  for (let c = 0; c < ch; c++) { const d = buf.getChannelData(c); for (let i = 0; i < n; i++) mono[i] += d[i] / ch; }
+  // Volumen: un micrófono de poca ganancia entrega picos de 0,05; se normaliza a 0,9
+  // (hasta ×20). El silencio de verdad se detecta ANTES de amplificar, con el rms crudo.
+  let pico = 0, suma = 0;
+  for (let i = 0; i < n; i++) { const a = Math.abs(mono[i]); if (a > pico) pico = a; suma += mono[i] * mono[i]; }
+  const rms = Math.sqrt(suma / Math.max(1, n));
+  const ganancia = pico > 0.001 ? Math.min(0.9 / pico, 20) : 1;
+  const wav = new ArrayBuffer(44 + n * 2), v = new DataView(wav);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt "); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, fs, true); v.setUint32(28, fs * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, "data"); v.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, mono[i] * ganancia)) * 32767, true);
+  ctx.close();
+  // rms ≈ 0.02–0.1 con voz normal; < 0.003 es silencio (micrófono equivocado o en mute).
+  return { wav, rms, pico, ganancia, segundos: n / fs, fs };
+}
+
+let grabadora = null, trozos = [], medidor = null;
+
+// Lista los micrófonos; los nombres solo aparecen después de conceder permiso una vez.
+async function cargarMicrofonos() {
+  try {
+    const devs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "audioinput");
+    const sel = $("mic"), actual = sel.value;
+    sel.innerHTML = `<option value="">predeterminado de Windows</option>` + devs.map((d, i) => `<option value="${esc(d.deviceId)}">${esc(d.label || "Micrófono " + (i + 1))}</option>`).join("");
+    if ([...sel.options].some((o) => o.value === actual)) sel.value = actual;
+  } catch {}
+}
+
+// Barra de nivel en vivo: si no se mueve mientras hablas, el micrófono elegido no capta.
+function medirNivel(stream) {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const fuente = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
+  an.fftSize = 1024; fuente.connect(an);
+  const datos = new Uint8Array(an.fftSize); let pico = 0, vivo = true;
+  (function tick() {
+    if (!vivo) return;
+    an.getByteTimeDomainData(datos);
+    let s = 0; for (const x of datos) { const y = (x - 128) / 128; s += y * y; }
+    const rms = Math.sqrt(s / datos.length); pico = Math.max(pico, rms);
+    $("nivelBarra").style.transform = `scaleX(${Math.min(1, rms * 3)})`;
+    requestAnimationFrame(tick);
+  })();
+  return { pico: () => pico, parar: () => { vivo = false; ctx.close(); $("nivelBarra").style.transform = "scaleX(0)"; } };
+}
+
+$("grabar").onclick = async () => {
+  if (grabadora && grabadora.state === "recording") { grabadora.stop(); return; }
+  try {
+    const id = $("mic").value;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: id ? { deviceId: { exact: id } } : true });
+    await cargarMicrofonos();
+    medidor = medirNivel(stream);
+    grabadora = new MediaRecorder(stream); trozos = [];
+    grabadora.ondataavailable = (e) => trozos.push(e.data);
+    grabadora.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      const pico = medidor.pico(); medidor.parar();
+      $("grabar").textContent = "🎙 Grabar"; $("grabar").classList.remove("grabando");
+      if (pico < 0.01) { estado(`El micrófono no captó voz (nivel máximo ${pico.toFixed(3)}). Elige otro micrófono en la lista, o revisa en Windows que no esté en silencio.`); return; }
+      await transcribirYAnalizar(new Blob(trozos, { type: grabadora.mimeType }), "voz");
+    };
+    grabadora.start();
+    $("grabar").textContent = "■ Detener"; $("grabar").classList.add("grabando");
+    estado("Grabando… habla y mira la barra de nivel; luego pulsa Detener.");
+  } catch (e) { estado("No se pudo usar el micrófono: " + e.message); }
+};
+cargarMicrofonos();
+
+$("subir").onclick = () => $("archivo").click();
+$("archivo").onchange = async () => { const f = $("archivo").files[0]; if (f) await transcribirYAnalizar(f, "audio subido"); $("archivo").value = ""; };
+
+async function transcribirYAnalizar(blob, fuente) {
+  try {
+    estado("Convirtiendo audio…");
+    const { wav, rms, pico, ganancia, segundos, fs } = await blobAWav16k(blob);
+    if (rms < 0.003) { estado(`El audio está en silencio (nivel ${rms.toFixed(4)}, ${segundos.toFixed(1)} s). No se transcribe: elige otro micrófono o sube el volumen de entrada en Windows.`); return; }
+    const aviso = pico < 0.1 ? ` · micrófono muy bajo (pico ${pico.toFixed(2)}, amplificado ×${ganancia.toFixed(0)}); sube el volumen de entrada en Windows si puedes` : "";
+    estado(`Transcribiendo ${segundos.toFixed(1)} s a ${fs} Hz en el dispositivo…${aviso}`);
+    const r = await post("/transcribir", wav, "application/octet-stream");
+    $("texto").value = r.texto;
+    if (r.sospechoso) {
+      $("resultado").classList.add("oculto");
+      estado(`Transcripción descartada: ${r.sospechoso}. Texto recibido: «${r.texto.slice(0, 80)}…». Revisa el micrófono y graba otra vez.`);
+      return;
+    }
+    $("transcripcion").textContent = `Transcrito en ${r.ms} ms: «${r.texto}»`;
+    await analizar(fuente);
+  } catch (e) { estado("Error: " + e.message); }
+}
+
+// ---------- extracción ----------
+$("analizar").onclick = () => { $("transcripcion").textContent = ""; analizar("texto"); };
+async function analizar(fuente) {
+  const texto = $("texto").value.trim();
+  if (!texto) return estado("Escribe o dicta algo primero.");
+  estado("Extrayendo con el modelo local… (unos segundos)");
+  $("analizar").disabled = true;
+  try {
+    const r = await post("/extraer", JSON.stringify({ texto }));
+    ultimo = { texto, fuente, json: r.json };
+    ultimoResultado = r;
+    pintarResultado(r);
+    estado(`Listo en ${(r.ms / 1000).toFixed(1)} s.`);
+  } catch (e) { estado("Error: " + e.message); }
+  $("analizar").disabled = false;
+}
+
+function pintarResultado(r) {
+  const j = r.json;
+  $("resultado").classList.remove("oculto");
+  const sinConfirmar = !j.clienteConfirmado && j.cliente !== "Unknown";
+  $("lugar").innerHTML = `<b>${esc(j.cliente)}</b> <span class="porque">${j.clienteDicho ? `· dijiste «${esc(j.clienteDicho)}», emparejado con la lista de clientes ` : ""}${sinConfirmar ? `· <span style="color:var(--ambar)">no coincide con ningún cliente de la lista: hay que confirmarlo</span> ` : ""}· ${esc(j.ciudad)} / ${esc(j.pais)}${j.lugarDeLista ? " (según la lista, no observado)" : ""}</span>`;
+  $("equipos").innerHTML = j.equipos.map((q) => `<tr>
+    <td><b>${esc(q.modalidad)}</b></td>
+    <td class="mono">${q.cantidad}${q.cantidadAproximada ? ' <span class="pugna">aprox.</span>' : ""}</td>
+    <td>${esc(q.marca)}</td><td>${esc(q.modelo)}${q.placa?.serie ? ` <span class="porque">SN ${esc(q.placa.serie)}</span>` : ""}</td>
+    <td>${q.placa?.anioFabricacion ? `${q.edadAnios} años <span class="porque">(placa, ${q.placa.anioFabricacion}${q.placa.confirma ? `; dijiste ≈${q.placa.confirma}` : ""})</span>` : q.edadAnios ? `≈${q.edadAnios} años` : q.edadCualitativa ? esc(q.edadCualitativa) : "—"}</td></tr>`).join("") || `<tr><td colspan="5" class="vacio">No se reconoció ningún equipo.</td></tr>`;
+  const d = $("descartes"), om = r.omisiones ?? [];
+  const partes = [];
+  if (r.descartes.length) partes.push(`<b>La verificación descartó ${r.descartes.length} dato${r.descartes.length > 1 ? "s" : ""} que el modelo propuso pero la frase no dice:</b><br>${r.descartes.map(esc).join("<br>")}`);
+  if (r.ajustes?.length) partes.push(`<b>El código corrigió ${r.ajustes.length} dato${r.ajustes.length > 1 ? "s" : ""} leyendo la frase, no al modelo:</b><br>${r.ajustes.map(esc).join("<br>")}`);
+  if (om.length) partes.push(`<b>Posible omisión:</b> ${om.map(esc).join("; ")}. Revisa el texto o dilo otra vez antes de guardar.`);
+  if (r.aproximadas?.length) partes.push(`<b>Erratas del transcriptor toleradas:</b> ${r.aproximadas.map(esc).join("; ")}.`);
+  if (r.reintento) partes.push(`<b>Reintento automático:</b> ${esc(r.reintento)}`);
+  if (!j.equipos.length && r.crudo?.equipos?.length) partes.push(`<b>Pista:</b> el modelo sí vio equipos, pero las palabras de la frase no coinciden con ningún equipo conocido. Suele ser una errata del transcriptor: corrige el texto de arriba y pulsa «Analizar texto».`);
+  if (partes.length) { d.classList.remove("oculto"); d.innerHTML = partes.join("<br><br>"); } else d.classList.add("oculto");
+  // Sin equipos reconocidos no hay observación que guardar.
+  $("guardar").disabled = j.equipos.length === 0;
+  $("pregunta").innerHTML = j.equipos.length
+    ? `<b>Siguiente pregunta:</b> ${esc(r.pregunta)}`
+    : `<b>No reconocí ningún equipo en el texto.</b> Revisa lo dictado o escríbelo de nuevo; no se puede guardar así.`;
+  $("crudo").textContent = "CRUDO:\n" + JSON.stringify(r.crudo, null, 2) + "\n\nVERIFICADO:\n" + JSON.stringify(j, null, 2);
+  $("guardado").textContent = "";
+}
+
+// ---------- placa del equipo (VisionPsy) ----------
+// La voz casi nunca da marca ni modelo: quedan en Unknown para siempre. La placa los
+// lleva impresos y además trae la fecha de fabricación, así que la antigüedad deja de
+// ser «parece de unos ocho años» y pasa a ser un número exacto.
+let placa = null;
+$("foto").onclick = () => $("imagen").click();
+$("imagen").onchange = async () => {
+  const f = $("imagen").files[0];
+  $("imagen").value = "";
+  if (!f) return;
+  estado("Leyendo la placa con VisionPsy… (la primera foto carga el modelo)");
+  $("foto").disabled = true;
+  try {
+    const r = await post("/placa", await f.arrayBuffer(), f.type || "image/png");
+    placa = r.campos;
+    pintarPlaca(r);
+    estado(`Placa leída en ${(r.ms / 1000).toFixed(1)} s.`);
+  } catch (e) { estado("Error: " + e.message); }
+  $("foto").disabled = false;
+};
+
+function pintarPlaca(r) {
+  const c = r.campos;
+  $("tarjetaPlaca").classList.remove("oculto");
+  const campo = (k, v) => `<div style="padding:5px 0"><span class="porque">${k}</span> <b>${esc(v || "—")}</b></div>`;
+  $("placaCampos").innerHTML =
+    campo("Marca", c.marca !== "Unknown" ? c.marca : "") +
+    campo("Modelo", c.modelo !== "Unknown" ? c.modelo : "") +
+    campo("Nº de serie", c.serie) +
+    campo("Fabricado en", c.anioFabricacion ? `${c.anioFabricacion} · ${c.edadAnios} años` : "") +
+    campo("Modalidad según la placa", c.modalidad !== "Unknown" ? c.modalidad : "no se deduce de la placa");
+  $("placaTexto").textContent = r.textoLeido;
+  $("aplicarPlaca").disabled = !ultimo;
+  $("placaEstado").textContent = ultimo ? "" : "Dicta o analiza una observación primero: la placa se aplica sobre ella.";
+}
+
+$("aplicarPlaca").onclick = async () => {
+  if (!ultimo || !placa) return;
+  const filas = ultimo.json.equipos;
+  // Una placa identifica UNA máquina: el número de serie y la fecha son de esa unidad,
+  // no del grupo. Copiarlos a varias filas sería inventar tantos equipos como filas.
+  const candidatas = filas.filter((q) => q.modalidad === placa.modalidad);
+  if (!candidatas.length && filas.length === 1) candidatas.push(filas[0]);
+  if (!candidatas.length) {
+    $("placaEstado").textContent = `La placa ${placa.modalidad === "Unknown" ? "no dice la modalidad" : "es de " + placa.modalidad} y la observación tiene ${filas.length} equipos: no sé a cuál pertenece. Dilo en el texto y vuelve a analizar.`;
+    return;
+  }
+  // A cuál de ellas. Si la persona estimó una edad parecida a la de la placa, es la misma
+  // máquina y la placa confirma su estimación. Si no, va a la fila sin datos, para no
+  // pisar lo que la persona sí dijo de otra unidad.
+  const cerca = placa.edadAnios ? candidatas.find((q) => q.edadAnios && Math.abs(q.edadAnios - placa.edadAnios) <= 2) : null;
+  let fila = cerca ?? candidatas.find((q) => q.marca === "Unknown" && !q.edadAnios) ?? candidatas[0];
+  const dichoAntes = fila.edadAnios;
+
+  // Si esa fila agrupa varias unidades, se parte: la de la placa y las demás, que siguen
+  // sin marca ni edad conocidas y por eso se seguirán preguntando.
+  if (fila.cantidad > 1) {
+    const resto = { ...fila, cantidad: fila.cantidad - 1 };
+    delete resto.placa;
+    fila.cantidad = 1;
+    filas.splice(filas.indexOf(fila) + 1, 0, resto);
+  }
+
+  if (placa.marca !== "Unknown") fila.marca = placa.marca;
+  if (placa.modelo !== "Unknown") fila.modelo = placa.modelo;
+  if (placa.edadAnios) { fila.edadAnios = placa.edadAnios; fila.edadCualitativa = ""; }
+  // Procedencia: este dato no salió de lo que dijo la persona, salió de la placa.
+  fila.placa = { serie: placa.serie, anioFabricacion: placa.anioFabricacion, confirma: cerca ? dichoAntes : 0 };
+
+  try {
+    const r = await post("/pregunta", JSON.stringify({ json: ultimo.json, texto: ultimo.texto }));
+    pintarResultado({ ...ultimoResultado, json: ultimo.json, pregunta: r.pregunta });
+    $("placaEstado").textContent = cerca
+      ? `Aplicada a un ${fila.modalidad}: dijiste ≈${dichoAntes} años y la placa dice ${placa.anioFabricacion}, o sea ${placa.edadAnios}. Es esa máquina, y ahora la edad es un dato, no una estimación.`
+      : `Aplicada a un ${fila.modalidad}. Las demás unidades siguen sin marca ni edad: se seguirán preguntando.`;
+  } catch (e) { $("placaEstado").textContent = "Error: " + e.message; }
+};
+
+// ---------- guardar y Cliente 360 ----------
+$("guardar").onclick = async () => {
+  if (!ultimo) return;
+  try {
+    const r = await post("/guardar", JSON.stringify({ observador: $("observador").value, ...ultimo }));
+    $("guardado").textContent = `Guardada como ${r.id}.`;
+    await cargarBase();
+  } catch (e) { $("guardado").textContent = "Error: " + e.message; }
+};
+$("reiniciar").onclick = async () => { if (confirm("¿Borrar todas las observaciones del laboratorio?")) { await post("/reiniciar", "{}"); abierta = null; await cargarBase(); } };
+
+async function cargarBase() {
+  const b = await fetch("/base").then((r) => r.json());
+  $("modelo").textContent = `${b.modelo} · todo en el dispositivo`;
+  if (!b.resumen.length) { $("base").innerHTML = `<p class="vacio">Todavía no hay observaciones guardadas.</p>`; return; }
+  $("base").innerHTML = b.resumen.map((c) => `
+    <div class="cliente-cab"><h3>${esc(c.cliente)}</h3><small>${esc(c.ciudad)} / ${esc(c.pais)} · ${c.observaciones} ${c.observaciones > 1 ? "observaciones" : "observación"}</small></div>
+    <table><thead><tr><th>Equipo</th><th>Cantidad</th><th>Marca</th><th>Antigüedad</th><th>Confianza</th></tr></thead><tbody>
+    ${c.modalidades.map((m) => {
+      const clave = c.cliente + "|" + m.modalidad, abre = abierta === clave;
+      return `<tr class="clic ${abre ? "abierta" : ""}" data-clave="${esc(clave)}">
+        <td><b>${esc(m.modalidad)}</b></td>
+        <td class="mono">${m.cantidades[0]}${m.conflicto ? `<span class="pugna">o ${m.cantidades.slice(1).join(" o ")}</span>` : ""}</td>
+        <td>${esc(m.marca)}</td><td>${esc(m.edad)}</td>
+        <td><span class="chip ${m.confianza}">${m.confianza}</span><span class="porque">${esc(m.porque)}</span></td></tr>
+      ${abre ? `<tr><td colspan="5"><div class="rastro"><b style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sello)">Rastro · ${m.reportes.length} reporte${m.reportes.length > 1 ? "s" : ""}</b>
+        ${m.reportes.map((r) => `<div class="r"><b>${esc(r.id)}</b> · ${esc(r.observador)} · ${new Date(r.fecha).toLocaleString("es-PA")} · ${esc(r.fuente)} → <b>${r.cantidad}</b>${r.aproximada ? " aprox." : ""}${r.marcas.length ? " · " + esc(r.marcas.join(", ")) : ""}${r.edades.length ? " · " + esc(r.edades.join(", ")) : ""}<br><i>«${esc(r.texto)}»</i></div>`).join("")}
+        ${m.conflicto ? `<div class="r" style="color:var(--ambar)"><b style="color:var(--ambar)">Conflicto:</b> las observaciones no coinciden en la cantidad. Se guardan todas; la próxima visita pregunta: ¿son ${m.cantidades.join(" o ")}?</div>` : ""}
+      </div></td></tr>` : ""}`;
+    }).join("")}
+    </tbody></table>`).join("");
+  document.querySelectorAll("tr.clic").forEach((tr) => tr.onclick = () => { abierta = abierta === tr.dataset.clave ? null : tr.dataset.clave; cargarBase(); });
+}
+
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+cargarBase();
+</script>
+</body>
+</html>

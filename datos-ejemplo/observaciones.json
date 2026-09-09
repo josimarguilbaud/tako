@@ -1,0 +1,80 @@
+[
+  {
+    "id": "OBS-001",
+    "fecha": "2026-09-08T14:20:11.000Z",
+    "observador": "Field User 01",
+    "fuente": "voz",
+    "texto": "Estoy en Hospital DemoCare Pacific, en Panama. Tienen dos resonadores y un tomografo. Uno de los resonadores parece de unos ocho anos.",
+    "json": {
+      "cliente": "Hospital DemoCare Pacific",
+      "ciudad": "Panama",
+      "pais": "Panama",
+      "equipos": [
+        {
+          "modalidad": "MR",
+          "cantidad": 1,
+          "cantidadAproximada": false,
+          "marca": "Unknown",
+          "modelo": "Unknown",
+          "edadAnios": 8,
+          "edadCualitativa": "unos"
+        },
+        {
+          "modalidad": "MR",
+          "cantidad": 1,
+          "cantidadAproximada": false,
+          "marca": "Unknown",
+          "modelo": "Unknown",
+          "edadAnios": 0,
+          "edadCualitativa": ""
+        },
+        {
+          "modalidad": "CT",
+          "cantidad": 1,
+          "cantidadAproximada": false,
+          "marca": "Unknown",
+          "modelo": "Unknown",
+          "edadAnios": 0,
+          "edadCualitativa": ""
+        }
+      ],
+      "clienteConfirmado": true,
+      "clienteDicho": "Hospital DemoCare Pacific"
+    }
+  },
+  {
+    "id": "OBS-002",
+    "fecha": "2026-09-09T09:05:44.000Z",
+    "observador": "Sales User 02",
+    "fuente": "voz",
+    "texto": "Estuve en Hospital DemoCare Pacific. Creo que tienen tres resonadores y un tomografo.",
+    "json": {
+      "cliente": "Hospital DemoCare Pacific",
+      "ciudad": "Panama City",
+      "pais": "Panama",
+      "equipos": [
+        {
+          "modalidad": "MR",
+          "cantidad": 3,
+          "cantidadAproximada": false,
+          "marca": "Unknown",
+          "modelo": "Unknown",
+          "edadAnios": 0,
+          "edadCualitativa": ""
+        },
+        {
+          "modalidad": "CT",
+          "cantidad": 1,
+          "cantidadAproximada": false,
+          "marca": "Unknown",
+          "modelo": "Unknown",
+          "edadAnios": 0,
+          "edadCualitativa": ""
+        }
+      ],
+      "clienteConfirmado": true,
+      "clienteDicho": "Hospital DemoCare Pacific",
+      "lugarDeLista": true
+    }
+  }
+]

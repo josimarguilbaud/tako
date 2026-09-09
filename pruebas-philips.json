@@ -1,0 +1,183 @@
+[
+  {
+    "n": 1,
+    "entrada": "I am at Hospital DemoCare Pacific in Panama. They have two MR systems and one CT.",
+    "espera": {
+      "cliente": "Hospital DemoCare Pacific",
+      "pais": "Panama",
+      "equipos": {
+        "MR": 2,
+        "CT": 1
+      }
+    },
+    "repregunta": "marca y antigüedad de cada modalidad"
+  },
+  {
+    "n": 2,
+    "entrada": "At Hospital DemoCare Horizon I saw three MR systems. Two seem old and one looks much newer.",
+    "espera": {
+      "cliente": "Hospital DemoCare Horizon",
+      "equipos": {
+        "MR": 3
+      }
+    },
+    "repregunta": "marca y edades por separado (viejos vs nuevo)"
+  },
+  {
+    "n": 3,
+    "entrada": "Clinica DemoCare Light has two CT scanners, both Orion Imaging, around eleven years old.",
+    "espera": {
+      "cliente": "Clinica DemoCare Light",
+      "equipos": {
+        "CT": 2
+      },
+      "marca": "Orion Imaging",
+      "edad": 11
+    },
+    "repregunta": "si conoce el modelo; confirmar cantidad"
+  },
+  {
+    "n": 4,
+    "entrada": "Centro Medico DemoCare Valley has one MR and two CTs. I do not know the brands.",
+    "espera": {
+      "cliente": "Centro Medico DemoCare Valley",
+      "equipos": {
+        "MR": 1,
+        "CT": 2
+      },
+      "marca": "Unknown"
+    },
+    "repregunta": "aceptar marca desconocida; preguntar edad o modelo"
+  },
+  {
+    "n": 5,
+    "entrada": "Hospital DemoCare North has about six ultrasound units, mostly new.",
+    "espera": {
+      "cliente": "Hospital DemoCare North",
+      "equipos": {
+        "Ultrasound": 6
+      },
+      "edadCualitativa": "new"
+    },
+    "repregunta": "cantidad exacta o estimada, marca, qué significa nuevo en años"
+  },
+  {
+    "n": 6,
+    "entrada": "Clinica DemoCare Andes has one very old CT and two MR systems from the same manufacturer.",
+    "espera": {
+      "cliente": "Clinica DemoCare Andes",
+      "equipos": {
+        "CT": 1,
+        "MR": 2
+      },
+      "edadCualitativa": "very old"
+    },
+    "repregunta": "marca, edad por modalidad, confirmar cantidades"
+  },
+  {
+    "n": 7,
+    "entrada": "Hospital DemoCare Park has one MR, maybe ten years old, plus three CT scanners.",
+    "espera": {
+      "cliente": "Hospital DemoCare Park",
+      "equipos": {
+        "MR": 1,
+        "CT": 3
+      },
+      "edad": 10,
+      "filas": [
+        "MR:1:10",
+        "CT:3:0"
+      ]
+    },
+    "repregunta": "marca de ambos; edad de los CT"
+  },
+  {
+    "n": 8,
+    "entrada": "Clinica DemoCare Central has many ultrasound systems, maybe eight, all Aurelia Health.",
+    "espera": {
+      "cliente": "Clinica DemoCare Central",
+      "equipos": {
+        "Ultrasound": 8
+      },
+      "marca": "Aurelia Health"
+    },
+    "repregunta": "confianza en cantidad y edad"
+  },
+  {
+    "n": 9,
+    "entrada": "Instituto DemoCare Lima has two old CTs and one recently installed MR.",
+    "espera": {
+      "cliente": "Instituto DemoCare Lima",
+      "equipos": {
+        "CT": 2,
+        "MR": 1
+      },
+      "edadCualitativa": "old"
+    },
+    "repregunta": "edades y marcas por separado"
+  },
+  {
+    "n": 10,
+    "entrada": "Hospital DemoCare Metro North has two MR systems. I know the brand is Aurelia Health but not the model.",
+    "espera": {
+      "cliente": "Hospital DemoCare Metro North",
+      "equipos": {
+        "MR": 2
+      },
+      "marca": "Aurelia Health",
+      "modelo": "Unknown"
+    },
+    "repregunta": "edad; aceptar modelo desconocido"
+  },
+  {
+    "n": 11,
+    "entrada": "Estoy en Hospital DemoCare Pacific, en Panamá. Tienen dos resonadores y un tomógrafo. Uno de los resonadores parece de unos ocho años.",
+    "espera": {
+      "cliente": "Hospital DemoCare Pacific",
+      "pais": "Panama",
+      "equipos": {
+        "MR": 2,
+        "CT": 1
+      },
+      "edad": 8,
+      "filas": [
+        "MR:1:8",
+        "MR:1:0",
+        "CT:1:0"
+      ]
+    },
+    "repregunta": "(español, ejemplo literal del enunciado) marca; edad del otro resonador y del tomógrafo"
+  },
+  {
+    "n": 12,
+    "entrada": "Estoy en el hospital DemoCare en Punta Pacífica. Tienen dos resonadores y un tomógrafo. Uno de los resonadores parece de tener siete años.",
+    "espera": {
+      "cliente": "Hospital DemoCare",
+      "equipos": {
+        "MR": 2,
+        "CT": 1
+      },
+      "edad": 7,
+      "filas": [
+        "MR:1:7",
+        "MR:1:0",
+        "CT:1:0"
+      ]
+    },
+    "repregunta": "(voz real de Josimar, 8 sep, OBS-001: el modelo daba MR 1 + CT 1 + CT 1)"
+  },
+  {
+    "n": 13,
+    "entrada": "Estoy en el hospital DemoCare Pacific en Panamá y tienen dos resonadores y un tomografón a los resonadores parece de unos ocho años.",
+    "espera": {
+      "cliente": "Hospital DemoCare Pacific",
+      "pais": "Panama",
+      "equipos": {
+        "MR": 2,
+        "CT": 1
+      },
+      "edad": 8
+    },
+    "repregunta": "(voz real de Nicole, 8 sep, OBS-002: transcripción con erratas, «tomografón»)"
+  }
+]

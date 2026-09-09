@@ -1,0 +1,14 @@
+{
+  "name": "consta-lab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Laboratorio local de Consta: voz -> texto -> extraccion -> verificacion -> Cliente 360, todo en el dispositivo con QVAC.",
+  "type": "module",
+  "scripts": {
+    "start": "node servidor.mjs",
+    "pruebas": "node prueba-extraccion3.mjs"
+  },
+  "dependencies": {
+    "@qvac/sdk": "^0.18.2"
+  }
+}

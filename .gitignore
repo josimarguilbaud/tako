@@ -1,0 +1,15 @@
+# QVAC son ~6 GB de binarios por plataforma: se bajan con npm install.
+node_modules/
+
+# Datos del laboratorio en uso: grabaciones de voz reales, la última foto recibida y
+# las observaciones de quien lo esté usando. Nada de eso se publica.
+datos/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Sobras de las primeras pruebas de voz del 8 sep. No las usa ningun script y pueden
+# llevar la voz de una persona: se quedan en local.
+audio-en.wav
+audio-es.wav

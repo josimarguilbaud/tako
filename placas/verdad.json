@@ -1,0 +1,106 @@
+[
+  {
+    "id": "philips-mr",
+    "marca": "PHILIPS",
+    "modelo": "Ingenia Ambition 1.5T",
+    "serie": "12345XY",
+    "anio": 2017,
+    "lineas": [
+      [
+        "MODEL",
+        "781342"
+      ],
+      [
+        "SN",
+        "12345XY"
+      ],
+      [
+        "MFG DATE",
+        "2017-06"
+      ],
+      [
+        "INPUT",
+        "400V 3~ 50/60Hz"
+      ]
+    ],
+    "pie": "Made in the Netherlands",
+    "estilo": "limpia"
+  },
+  {
+    "id": "ge-ct",
+    "marca": "GE HealthCare",
+    "modelo": "Revolution CT",
+    "serie": "GE-99213",
+    "anio": 2021,
+    "lineas": [
+      [
+        "MODEL",
+        "5827411"
+      ],
+      [
+        "SERIAL NO",
+        "GE-99213"
+      ],
+      [
+        "DATE OF MFG",
+        "2021-03"
+      ],
+      [
+        "RATING",
+        "480V 60Hz"
+      ]
+    ],
+    "pie": "Made in USA",
+    "estilo": "limpia"
+  },
+  {
+    "id": "siemens-ct",
+    "marca": "SIEMENS Healthineers",
+    "modelo": "SOMATOM go.Top",
+    "serie": "SI-77120",
+    "anio": 2019,
+    "lineas": [
+      [
+        "TYPE",
+        "11045622"
+      ],
+      [
+        "SN",
+        "SI-77120"
+      ],
+      [
+        "BAUJAHR",
+        "2019-11"
+      ],
+      [
+        "NETZ",
+        "400V 3N~"
+      ]
+    ],
+    "pie": "Made in Germany",
+    "estilo": "limpia"
+  },
+  {
+    "id": "philips-gastada",
+    "marca": "PHILIPS",
+    "modelo": "Achieva 3.0T",
+    "serie": "88231AB",
+    "anio": 2012,
+    "lineas": [
+      [
+        "MODEL",
+        "459800"
+      ],
+      [
+        "SN",
+        "88231AB"
+      ],
+      [
+        "MFG DATE",
+        "2012-09"
+      ]
+    ],
+    "pie": "Made in the Netherlands",
+    "estilo": "gastada"
+  }
+]

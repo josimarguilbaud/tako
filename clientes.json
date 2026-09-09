@@ -1,0 +1,67 @@
+[
+  {
+    "nombre": "Hospital DemoCare Pacific",
+    "ciudad": "Panama City",
+    "pais": "Panama"
+  },
+  {
+    "nombre": "Hospital DemoCare Horizon",
+    "ciudad": "Sao Paulo",
+    "pais": "Brazil"
+  },
+  {
+    "nombre": "Clinica DemoCare Light",
+    "ciudad": "Campinas",
+    "pais": "Brazil"
+  },
+  {
+    "nombre": "Centro Medico DemoCare Valley",
+    "ciudad": "Mexico City",
+    "pais": "Mexico"
+  },
+  {
+    "nombre": "Hospital DemoCare North",
+    "ciudad": "Monterrey",
+    "pais": "Mexico"
+  },
+  {
+    "nombre": "Clinica DemoCare Andes",
+    "ciudad": "Santiago",
+    "pais": "Chile"
+  },
+  {
+    "nombre": "Hospital DemoCare Park",
+    "ciudad": "Buenos Aires",
+    "pais": "Argentina"
+  },
+  {
+    "nombre": "Clinica DemoCare Central",
+    "ciudad": "Bogota",
+    "pais": "Colombia"
+  },
+  {
+    "nombre": "Hospital DemoCare Pines",
+    "ciudad": "Medellin",
+    "pais": "Colombia"
+  },
+  {
+    "nombre": "Instituto DemoCare Lima",
+    "ciudad": "Lima",
+    "pais": "Peru"
+  },
+  {
+    "nombre": "Hospital DemoCare Green",
+    "ciudad": "San Jose",
+    "pais": "Costa Rica"
+  },
+  {
+    "nombre": "Centro Diagnostico DemoCare Caribbean",
+    "ciudad": "Santo Domingo",
+    "pais": "Dominican Republic"
+  },
+  {
+    "nombre": "Hospital DemoCare Metro North",
+    "ciudad": "Quito",
+    "pais": "Ecuador"
+  }
+]

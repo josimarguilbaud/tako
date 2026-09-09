@@ -1,0 +1,159 @@
+{
+  "modelo": "VisionPsy-Nano-460M",
+  "cuantizacion": "q4_k_m (+ mmproj q8_0)",
+  "cargaMs": 4024,
+  "placas": [
+    {
+      "id": "philips-mr",
+      "ms": 18268,
+      "campos": {
+        "marca": "Philips",
+        "marcaLeida": "PHILIPS",
+        "modelo": "Ingenia Ambition 1.5T",
+        "modeloCatalogo": "781342",
+        "serie": "12345XY",
+        "anioFabricacion": 2017,
+        "edadAnios": 9,
+        "modalidad": "MR"
+      },
+      "textoLeido": "PHILIPS  \nIngenia Ambition 1.5T\nPHILIPS\nIngeniaAmbition 1.5T\nMODEL 781342\nSN 12345XY\nMFG DATE 2017-06\nINPUT 400V 3~ 50/60Hz",
+      "stats": [
+        {
+          "timeToFirstToken": 6468.167,
+          "tokensPerSecond": 57.40929711250246,
+          "cacheTokens": 0,
+          "promptTokens": 882,
+          "generatedTokens": 151,
+          "emittedTokens": 151,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        },
+        {
+          "timeToFirstToken": 6448.42,
+          "tokensPerSecond": 57.950324613802486,
+          "cacheTokens": 0,
+          "promptTokens": 890,
+          "generatedTokens": 63,
+          "emittedTokens": 63,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        }
+      ],
+      "correcto": true
+    },
+    {
+      "id": "ge-ct",
+      "ms": 18579,
+      "campos": {
+        "marca": "GE HealthCare",
+        "marcaLeida": "GE Healthcare",
+        "modelo": "Revolution CT",
+        "modeloCatalogo": "5827411",
+        "serie": "GE-99213",
+        "anioFabricacion": 2021,
+        "edadAnios": 5,
+        "modalidad": "CT"
+      },
+      "textoLeido": "GE Healthcare, Revolution CT\nMODEL 5827411\nSERIAL NO GE-99213\nDATE OF MFG 2021-03\nRATING 480V 60Hz\nMade in USA",
+      "stats": [
+        {
+          "timeToFirstToken": 6479.425,
+          "tokensPerSecond": 54.966879183453926,
+          "cacheTokens": 0,
+          "promptTokens": 882,
+          "generatedTokens": 168,
+          "emittedTokens": 168,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        },
+        {
+          "timeToFirstToken": 6467.559,
+          "tokensPerSecond": 56.720046532681316,
+          "cacheTokens": 0,
+          "promptTokens": 890,
+          "generatedTokens": 51,
+          "emittedTokens": 51,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        }
+      ],
+      "correcto": true
+    },
+    {
+      "id": "siemens-ct",
+      "ms": 18437,
+      "campos": {
+        "marca": "Siemens Healthineers",
+        "marcaLeida": "SIEMENS",
+        "modelo": "SOMATOM go.Top",
+        "modeloCatalogo": "11045622",
+        "serie": "SI-77120",
+        "anioFabricacion": 2019,
+        "edadAnios": 7,
+        "modalidad": "Unknown"
+      },
+      "textoLeido": "SIEMENS, SOMATOM go.Top\nSOMATOM go.Top\nTYPE 11045622\nSN SI-77120\nBAUJAHR 2019-11\nNETZ 400V 3N~",
+      "stats": [
+        {
+          "timeToFirstToken": 6463.722,
+          "tokensPerSecond": 57.15191717027952,
+          "cacheTokens": 0,
+          "promptTokens": 882,
+          "generatedTokens": 155,
+          "emittedTokens": 155,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        },
+        {
+          "timeToFirstToken": 6511.312,
+          "tokensPerSecond": 55.960536207522786,
+          "cacheTokens": 0,
+          "promptTokens": 890,
+          "generatedTokens": 53,
+          "emittedTokens": 53,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        }
+      ],
+      "correcto": true
+    },
+    {
+      "id": "philips-gastada",
+      "ms": 17689,
+      "campos": {
+        "marca": "Philips",
+        "marcaLeida": "PHILIPS",
+        "modelo": "Achieva 3.0T",
+        "modeloCatalogo": "459800",
+        "serie": "88231AB",
+        "anioFabricacion": 2012,
+        "edadAnios": 14,
+        "modalidad": "MR"
+      },
+      "textoLeido": "PHILIPS, Achieva 3.0T\nPHILIPS    \n\nAchieva 3.0T  \nMODEL  \n459800  \nSN  \n88231AB  \nMFG DATE  \n2012-09  \nMade in the Netherlands",
+      "stats": [
+        {
+          "timeToFirstToken": 6458.71,
+          "tokensPerSecond": 57.71257623263656,
+          "cacheTokens": 0,
+          "promptTokens": 882,
+          "generatedTokens": 122,
+          "emittedTokens": 122,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        },
+        {
+          "timeToFirstToken": 6462.253,
+          "tokensPerSecond": 57.97721495452287,
+          "cacheTokens": 0,
+          "promptTokens": 890,
+          "generatedTokens": 58,
+          "emittedTokens": 58,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        }
+      ],
+      "correcto": true
+    }
+  ]
+}
