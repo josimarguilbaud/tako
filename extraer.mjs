@@ -57,7 +57,8 @@ export async function extraerVerificado(modelId, texto) {
     temperature: 0, max_tokens: 400, captureThinking: false,
   });
   const crudo = JSON.parse(await run.text);
-  return { crudo, ...verificar(crudo, texto), ms: Date.now() - t0 };
+  // stats trae TTFT, tokens y throughput: es el registro que pide el reto Psy.
+  return { crudo, ...verificar(crudo, texto), ms: Date.now() - t0, stats: await run.stats };
 }
 
 export async function extraer(modelId, texto) {

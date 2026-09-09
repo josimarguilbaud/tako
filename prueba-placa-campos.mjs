@@ -32,6 +32,12 @@ const pegado = camposDePlaca("GE HealthCare\nRevolution CT", "MODEL 5827411\nSER
 igual("«SERIAL NOGE-99213» se lee bien", pegado.serie, "GE-99213");
 igual("pero «SN NO4471X» no pierde el NO", camposDePlaca("Philips\nAchieva", "SN NO4471X").serie, "NO4471X");
 
+// Otro del 9 sep: VisionPsy leyo "GE brand, Revolution CT" en vez de "GE HealthCare".
+// Una palabra de relleno no puede ganarle al nombre del producto.
+igual("«GE brand, Revolution CT»", camposDePlaca("GE brand, Revolution CT", "MODEL 5827411\nSERIAL NO GE-99213").modelo, "Revolution CT");
+igual("«The answer is» no es un modelo", camposDePlaca("The answer is\nPhilips, Achieva 3.0T", "SN 88231AB").modelo, "Achieva 3.0T");
+igual("si solo queda relleno, no hay modelo", camposDePlaca("Philips brand", "SN 88231AB").modelo, "Unknown");
+
 const si = camposDePlaca("SIEMENS Healthineers\nSOMATOM go.Top", "TYPE 11045622\nSN SI-77120\nBAUJAHR 2019-11\nNETZ 400V 3N~");
 igual("Siemens en aleman", [si.marca, si.modelo, si.serie, si.anioFabricacion], ["Siemens Healthineers", "SOMATOM go.Top", "SI-77120", 2019]);
 

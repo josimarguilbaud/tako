@@ -1,0 +1,204 @@
+{
+  "modelo": "QWEN3_1_7B_INST_Q4",
+  "archivo": "Qwen3-1.7B-Q4_0.gguf",
+  "cuantizacion": "q4",
+  "cargaMs": 19338,
+  "sistema": "You extract hospital equipment observations from a field colleague's message into JSON. Extract only what the message states; do not ask questions and do not infer.\nRules:\n- cliente: the facility name exactly as written in the message (e.g. \"Hospital DemoCare Pacific\", \"Clinica DemoCare Light\"), with no surrounding words.\n- ciudad / pais: ONLY from an explicit location phrase such as \"in Panama\", \"en Panamá\", \"in São Paulo\". A country name alone goes in pais. NEVER take a word from the facility name as a place. If there is no explicit location phrase, write \"Unknown\" for both.\n- Modality synonyms: MRI/resonador(es) -> MR; scanner/tomógrafo/tomografía -> CT; ecógrafo/ultrasonido/ultrasound units -> Ultrasound.\n- Quantity: exact number if stated. If approximate (\"about\", \"maybe\", \"many\", \"unos\", \"roughly\"), use the number given and set cantidadAproximada=true.\n- Age: edadAnios MUST be a number that appears in the message (\"eight\" -> 8, \"maybe ten\" -> 10; a range 8-10 -> 9). If the message gives no number for that group, edadAnios = 0. NEVER invent a number.\n- edadCualitativa: only a word the message uses for that group (\"old\", \"new\", \"very old\", \"newer\"); empty string if the message says nothing about age. If the message describes age with words and no number (\"one very old CT\", \"mostly new\", \"recently installed\"), you MUST copy that word here: it is the only age datum there is.\n- One entry per modality with the total stated. Do NOT split a modality into several entries: if only some units have a stated age, put the age on that entry and let the count be the total. (verificar.mjs reparte esas filas después, leyendo el partitivo de la frase.)\n- NEVER guess a brand or model: write \"Unknown\" unless the message states it. A brand stated for all units applies to each entry.\nOutput only JSON matching the schema.",
+  "casos": [
+    {
+      "n": 1,
+      "entrada": "I am at Hospital DemoCare Pacific in Panama. They have two MR systems and one CT.",
+      "ms": 9234,
+      "stats": {
+        "timeToFirstToken": 1827.171,
+        "tokensPerSecond": 22.80662587727599,
+        "cacheTokens": 0,
+        "promptTokens": 495,
+        "generatedTokens": 161,
+        "emittedTokens": 161,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 2,
+      "entrada": "At Hospital DemoCare Horizon I saw three MR systems. Two seem old and one looks much newer.",
+      "ms": 6431,
+      "stats": {
+        "timeToFirstToken": 1845.834,
+        "tokensPerSecond": 22.912753378812813,
+        "cacheTokens": 0,
+        "promptTokens": 496,
+        "generatedTokens": 98,
+        "emittedTokens": 98,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 3,
+      "entrada": "Clinica DemoCare Light has two CT scanners, both Orion Imaging, around eleven years old.",
+      "ms": 6695,
+      "stats": {
+        "timeToFirstToken": 1845.838,
+        "tokensPerSecond": 22.414508236570118,
+        "cacheTokens": 0,
+        "promptTokens": 495,
+        "generatedTokens": 103,
+        "emittedTokens": 103,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 4,
+      "entrada": "Centro Medico DemoCare Valley has one MR and two CTs. I do not know the brands.",
+      "ms": 7146,
+      "stats": {
+        "timeToFirstToken": 1904.923,
+        "tokensPerSecond": 22.01200306374472,
+        "cacheTokens": 0,
+        "promptTokens": 498,
+        "generatedTokens": 108,
+        "emittedTokens": 108,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 5,
+      "entrada": "Hospital DemoCare North has about six ultrasound units, mostly new.",
+      "ms": 7067,
+      "stats": {
+        "timeToFirstToken": 1870.253,
+        "tokensPerSecond": 20.977794051460435,
+        "cacheTokens": 0,
+        "promptTokens": 489,
+        "generatedTokens": 99,
+        "emittedTokens": 99,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 6,
+      "entrada": "Clinica DemoCare Andes has one very old CT and two MR systems from the same manufacturer.",
+      "ms": 10445,
+      "stats": {
+        "timeToFirstToken": 1903.67,
+        "tokensPerSecond": 20.537772345311527,
+        "cacheTokens": 0,
+        "promptTokens": 496,
+        "generatedTokens": 167,
+        "emittedTokens": 167,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 7,
+      "entrada": "Hospital DemoCare Park has one MR, maybe ten years old, plus three CT scanners.",
+      "ms": 10221,
+      "stats": {
+        "timeToFirstToken": 1880.803,
+        "tokensPerSecond": 20.753560524866348,
+        "cacheTokens": 0,
+        "promptTokens": 494,
+        "generatedTokens": 165,
+        "emittedTokens": 165,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 8,
+      "entrada": "Clinica DemoCare Central has many ultrasound systems, maybe eight, all Aurelia Health.",
+      "ms": 7311,
+      "stats": {
+        "timeToFirstToken": 1878.3410000000001,
+        "tokensPerSecond": 21.12656700670184,
+        "cacheTokens": 0,
+        "promptTokens": 494,
+        "generatedTokens": 103,
+        "emittedTokens": 103,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 9,
+      "entrada": "Instituto DemoCare Lima has two old CTs and one recently installed MR.",
+      "ms": 11048,
+      "stats": {
+        "timeToFirstToken": 1909.316,
+        "tokensPerSecond": 19.21283030450332,
+        "cacheTokens": 0,
+        "promptTokens": 493,
+        "generatedTokens": 163,
+        "emittedTokens": 163,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 10,
+      "entrada": "Hospital DemoCare Metro North has two MR systems. I know the brand is Aurelia Health but not the model.",
+      "ms": 8317,
+      "stats": {
+        "timeToFirstToken": 1973.993,
+        "tokensPerSecond": 19.624708915579316,
+        "cacheTokens": 0,
+        "promptTokens": 499,
+        "generatedTokens": 106,
+        "emittedTokens": 106,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 11,
+      "entrada": "Estoy en Hospital DemoCare Pacific, en Panamá. Tienen dos resonadores y un tomógrafo. Uno de los resonadores parece de unos ocho años.",
+      "ms": 10490,
+      "stats": {
+        "timeToFirstToken": 1949.9170000000001,
+        "tokensPerSecond": 21.00432163917726,
+        "cacheTokens": 0,
+        "promptTokens": 513,
+        "generatedTokens": 168,
+        "emittedTokens": 168,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 12,
+      "entrada": "Estoy en el hospital DemoCare en Punta Pacífica. Tienen dos resonadores y un tomógrafo. Uno de los resonadores parece de tener siete años.",
+      "ms": 10393,
+      "stats": {
+        "timeToFirstToken": 1932.554,
+        "tokensPerSecond": 21.364389909861014,
+        "cacheTokens": 0,
+        "promptTokens": 514,
+        "generatedTokens": 171,
+        "emittedTokens": 171,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    },
+    {
+      "n": 13,
+      "entrada": "Estoy en el hospital DemoCare Pacific en Panamá y tienen dos resonadores y un tomografón a los resonadores parece de unos ocho años.",
+      "ms": 10341,
+      "stats": {
+        "timeToFirstToken": 1895.487,
+        "tokensPerSecond": 20.759604038401214,
+        "cacheTokens": 0,
+        "promptTokens": 509,
+        "generatedTokens": 164,
+        "emittedTokens": 164,
+        "avgConcurrentSeq": 1,
+        "backendDevice": "gpu"
+      }
+    }
+  ]
+}

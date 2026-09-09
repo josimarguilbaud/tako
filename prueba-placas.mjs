@@ -1,6 +1,6 @@
 // Puntúa la lectura de placas contra la verdad conocida de placas/verdad.json, y deja
 // el registro de rendimiento (carga, TTFT, tokens, throughput) que pide el reto Psy.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { loadModel, unloadModel, VISIONPSY_NANO_460M_MULTIMODAL_Q4_K_M_1, MMPROJ_VISIONPSY_NANO_460M_MULTIMODAL_Q8_0_1 } from "@qvac/sdk";
 import { leerPlaca } from "./placa.mjs";
 import { plano } from "./verificar.mjs";
@@ -37,6 +37,7 @@ console.log(`\nRESULTADO: ${ok}/${verdad.length} placas leídas sin un solo camp
 const ttft = registro.placas.flatMap((x) => x.stats.map((s) => s.timeToFirstToken));
 const tps = registro.placas.flatMap((x) => x.stats.map((s) => s.tokensPerSecond));
 console.log(`TTFT medio ${(ttft.reduce((a, b) => a + b, 0) / ttft.length).toFixed(0)} ms · ${(tps.reduce((a, b) => a + b, 0) / tps.length).toFixed(1)} tok/s · ${registro.placas[0].stats[0].backendDevice}`);
-writeFileSync(new URL("./placas/rendimiento.json", import.meta.url), JSON.stringify(registro, null, 2) + "\n");
-console.log("registro de rendimiento en placas/rendimiento.json");
+mkdirSync(new URL("./rendimiento/", import.meta.url), { recursive: true });
+writeFileSync(new URL("./rendimiento/placas.json", import.meta.url), JSON.stringify(registro, null, 2) + "\n");
+console.log("registro de rendimiento en rendimiento/placas.json");
 await unloadModel({ modelId, clearStorage: false });

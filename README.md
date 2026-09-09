@@ -93,8 +93,8 @@ borran con el botón de abajo del todo.
 ## Pruebas
 
 ```
-node prueba-cantidades.mjs     # 24 pruebas, sin modelo, milisegundos
-node prueba-placa-campos.mjs   # 18 pruebas, sin modelo, milisegundos
+node prueba-cantidades.mjs     # 24 pruebas de la capa de texto, sin modelo
+node prueba-placa-campos.mjs   # 21 pruebas de la capa de la placa, sin modelo
 node prueba-extraccion3.mjs    # 13 casos con Qwen3 1.7B (~2,5 min)
 node prueba-placas.mjs         # 4 placas con VisionPsy (~1,5 min)
 ```
@@ -104,14 +104,24 @@ node prueba-placas.mjs         # 4 placas con VisionPsy (~1,5 min)
 | Qué | Resultado | Detalle |
 |---|---|---|
 | Extracción de lo dictado | **13 / 13** | las diez pruebas oficiales de Philips, la del enunciado en español y dos grabaciones de voz reales |
-| Tiempo por observación | **7,7 s** | media de los 13 casos |
-| Lectura de placas | **4 / 4** | sin un solo campo mal, incluida una placa gastada con brillo y ruido |
-| Tiempo por foto | **18 s** | dos pases · TTFT 6,5 s · 57 tokens/s |
-| Pruebas deterministas | **42** | sin cargar ningún modelo |
+| Tiempo por observación | **8,9 s** | media de los 13 casos · carga 19,3 s · TTFT 1,9 s · 21,2 tok/s · prompt de 499 tokens |
+| Lectura de placas | **4 / 4** | tres corridas seguidas sin un solo campo mal, incluida una placa gastada con brillo y ruido |
+| Tiempo por foto | **18,6 s** | dos pases · carga 5,1 s · TTFT 6,8 s · 52,5 tok/s · prompt de 893 tokens |
+| Pruebas deterministas | **45** | sin cargar ningún modelo, en milisegundos |
 
-`placas/rendimiento.json` guarda el registro estructurado de la lectura de placas: tiempo de
-carga del modelo, TTFT, tokens de prompt y de generación, throughput y dispositivo, por cada
-placa. Lo regenera `node prueba-placas.mjs`.
+`rendimiento/texto.json` y `rendimiento/placas.json` guardan el registro estructurado y
+reproducible: modelo, archivo, cuantización, tiempo de carga, el prompt del sistema, y por
+cada caso el TTFT, los tokens de prompt y de generación, el throughput y el dispositivo.
+Los regeneran `node prueba-extraccion3.mjs` y `node prueba-placas.mjs`.
+
+### Una nota honesta sobre la variabilidad
+
+VisionPsy **no es determinista ni a temperatura 0**. En tres corridas del 9 de septiembre se
+desvió de tres formas distintas: pegó la etiqueta al número de serie (`SERIAL NOGE-99213`),
+metió una palabra de relleno junto a la marca (`GE brand`) y contestó como en un chat
+(`The answer is…`). Las tres están cubiertas por pruebas deterministas con el texto exacto
+que devolvió, y las tres las absorbe el código, no el prompt. Es justamente el motivo de que
+el parseo no se le delegue al modelo.
 
 ---
 

@@ -13,7 +13,7 @@
 import { completion } from "@qvac/sdk";
 import { plano } from "./verificar.mjs";
 
-export const PREGUNTA_CABECERA = "What manufacturer brand name and what product name are printed on this nameplate? Answer with two lines: the brand, then the product name.";
+export const PREGUNTA_CABECERA = "What manufacturer brand name and what product name are printed on this nameplate? Answer with two lines: the brand, then the product name. Write only those two lines, with no preamble and no explanation.";
 export const PREGUNTA_FILAS = "This is the identification nameplate of a medical imaging system. Transcribe every line of text exactly as printed, one line per row. Do not explain, do not add anything.";
 
 // Fabricantes de imagen médica conocidos. La marca leída se ancla aquí: así una errata
@@ -26,6 +26,15 @@ export const FABRICANTES = [
   // Marcas de la hoja de pruebas de Philips, para que el laboratorio case con ellas.
   "Orion Imaging", "Aurelia Health",
 ];
+
+// VisionPsy no es determinista ni a temperatura 0, y no se desvía siempre igual. En tres
+// corridas del 9 sep se vieron tres formas distintas: pegar la etiqueta al número de serie
+// («SERIAL NOGE-99213»), meter una palabra de relleno junto a la marca («GE brand») y
+// contestar como en un chat («The answer is…»). El código no le pide que se porte bien:
+// descarta lo que no puede ser el nombre de un equipo.
+const RELLENO = new Set(["brand", "brand name", "logo", "name", "manufacturer", "model",
+  "marca", "nombre", "logotipo", "fabricante", "modelo"]);
+const PREAMBULO = /^\s*(the\s+(answer|brand|manufacturer|product|model)(\s+name)?\s+is|here\s+(is|are)|answer|respuesta|la\s+marca\s+es|el\s+modelo\s+es)\b[:\s]*/i;
 
 const distancia = (a, b) => {
   const f = Array.from({ length: b.length + 1 }, (_, j) => j);
@@ -90,18 +99,23 @@ export function modalidadDePlaca(texto) {
 // el texto leído, igual que en la ruta de voz: el modelo propone, el código comprueba.
 export function camposDePlaca(cabecera, filas) {
   const todo = `${cabecera}\n${filas}`;
-  const lineas = sinPensamiento(cabecera).split(/[\n,]/).map((l) => l.trim()).filter(Boolean);
+  const lineas = sinPensamiento(cabecera).split(/[\n,]/)
+    .map((l) => l.replace(PREAMBULO, "").trim())
+    .filter(Boolean);
 
   const marca = anclarFabricante(cabecera) ?? anclarFabricante(filas);
   // El nombre comercial es lo que queda de la cabecera al quitar la marca ENTERA. Con
   // solo la primera palabra, "GE HealthCare" dejaba "HealthCare" como nombre de producto.
   const partes = marca ? plano(marca).split(" ").map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) : [];
+  // Se queda con el candidato MÁS LARGO, no con el primero: VisionPsy a veces mete una
+  // palabra de relleno junto a la marca («GE brand, Revolution CT», visto el 9 sep) y el
+  // primero ganaba con «brand». El nombre de un producto siempre es más largo que eso.
   let modeloComercial = "";
   for (const l of lineas) {
     let resto = l;
     for (const parte of partes) resto = resto.replace(new RegExp(`\\b${parte}\\b`, "ig"), " ");
     resto = resto.replace(/\s+/g, " ").replace(/^[,;:.\-\s]+|[,;:.\-\s]+$/g, "").trim();
-    if (resto.length > 2) { modeloComercial = resto; break; }
+    if (resto.length > 2 && !RELLENO.has(plano(resto)) && resto.length > modeloComercial.length) modeloComercial = resto;
   }
 
   const mSerie = ETIQUETAS.serieCorta.exec(filas) ?? ETIQUETAS.serieLarga.exec(filas);

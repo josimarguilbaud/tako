@@ -1,11 +1,11 @@
 {
   "modelo": "VisionPsy-Nano-460M",
   "cuantizacion": "q4_k_m (+ mmproj q8_0)",
-  "cargaMs": 4024,
+  "cargaMs": 5128,
   "placas": [
     {
       "id": "philips-mr",
-      "ms": 18268,
+      "ms": 19464,
       "campos": {
         "marca": "Philips",
         "marcaLeida": "PHILIPS",
@@ -16,59 +16,21 @@
         "edadAnios": 9,
         "modalidad": "MR"
       },
-      "textoLeido": "PHILIPS  \nIngenia Ambition 1.5T\nPHILIPS\nIngeniaAmbition 1.5T\nMODEL 781342\nSN 12345XY\nMFG DATE 2017-06\nINPUT 400V 3~ 50/60Hz",
+      "textoLeido": "PHILIPS  \nIngenia Ambition 1.5T\nModel: 781342\nSN: 12345XY\nMFG Date: 2017-06\nINPUT: 400V 3~ 50/60Hz",
       "stats": [
         {
-          "timeToFirstToken": 6468.167,
-          "tokensPerSecond": 57.40929711250246,
+          "timeToFirstToken": 6852.81,
+          "tokensPerSecond": 52.26620207820375,
           "cacheTokens": 0,
-          "promptTokens": 882,
-          "generatedTokens": 151,
-          "emittedTokens": 151,
+          "promptTokens": 896,
+          "generatedTokens": 147,
+          "emittedTokens": 147,
           "avgConcurrentSeq": 1,
           "backendDevice": "gpu"
         },
         {
-          "timeToFirstToken": 6448.42,
-          "tokensPerSecond": 57.950324613802486,
-          "cacheTokens": 0,
-          "promptTokens": 890,
-          "generatedTokens": 63,
-          "emittedTokens": 63,
-          "avgConcurrentSeq": 1,
-          "backendDevice": "gpu"
-        }
-      ],
-      "correcto": true
-    },
-    {
-      "id": "ge-ct",
-      "ms": 18579,
-      "campos": {
-        "marca": "GE HealthCare",
-        "marcaLeida": "GE Healthcare",
-        "modelo": "Revolution CT",
-        "modeloCatalogo": "5827411",
-        "serie": "GE-99213",
-        "anioFabricacion": 2021,
-        "edadAnios": 5,
-        "modalidad": "CT"
-      },
-      "textoLeido": "GE Healthcare, Revolution CT\nMODEL 5827411\nSERIAL NO GE-99213\nDATE OF MFG 2021-03\nRATING 480V 60Hz\nMade in USA",
-      "stats": [
-        {
-          "timeToFirstToken": 6479.425,
-          "tokensPerSecond": 54.966879183453926,
-          "cacheTokens": 0,
-          "promptTokens": 882,
-          "generatedTokens": 168,
-          "emittedTokens": 168,
-          "avgConcurrentSeq": 1,
-          "backendDevice": "gpu"
-        },
-        {
-          "timeToFirstToken": 6467.559,
-          "tokensPerSecond": 56.720046532681316,
+          "timeToFirstToken": 6785.914,
+          "tokensPerSecond": 53.676921765360284,
           "cacheTokens": 0,
           "promptTokens": 890,
           "generatedTokens": 51,
@@ -80,11 +42,49 @@
       "correcto": true
     },
     {
+      "id": "ge-ct",
+      "ms": 19110,
+      "campos": {
+        "marca": "GE HealthCare",
+        "marcaLeida": "GE Healthcare",
+        "modelo": "Revolution CT",
+        "modeloCatalogo": "5827411",
+        "serie": "GE-99213",
+        "anioFabricacion": 2021,
+        "edadAnios": 5,
+        "modalidad": "CT"
+      },
+      "textoLeido": "GE Healthcare  \nRevolution CT\nMODEL 5827411  \nSERIAL NO GE-99213  \nDATE OF MFG 2021-03  \nRATING 480V 60Hz  \nMade in USA",
+      "stats": [
+        {
+          "timeToFirstToken": 6699.593,
+          "tokensPerSecond": 53.104567188015544,
+          "cacheTokens": 0,
+          "promptTokens": 896,
+          "generatedTokens": 136,
+          "emittedTokens": 136,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        },
+        {
+          "timeToFirstToken": 6700.127,
+          "tokensPerSecond": 52.99457913632325,
+          "cacheTokens": 0,
+          "promptTokens": 890,
+          "generatedTokens": 55,
+          "emittedTokens": 55,
+          "avgConcurrentSeq": 1,
+          "backendDevice": "gpu"
+        }
+      ],
+      "correcto": true
+    },
+    {
       "id": "siemens-ct",
-      "ms": 18437,
+      "ms": 18125,
       "campos": {
         "marca": "Siemens Healthineers",
-        "marcaLeida": "SIEMENS",
+        "marcaLeida": "SIEMENS Healthineers",
         "modelo": "SOMATOM go.Top",
         "modeloCatalogo": "11045622",
         "serie": "SI-77120",
@@ -92,25 +92,25 @@
         "edadAnios": 7,
         "modalidad": "Unknown"
       },
-      "textoLeido": "SIEMENS, SOMATOM go.Top\nSOMATOM go.Top\nTYPE 11045622\nSN SI-77120\nBAUJAHR 2019-11\nNETZ 400V 3N~",
+      "textoLeido": "SIEMENS Healthineers, SOMATOM go.Top\nTYPE 11045622  \nSN SI-77120  \nBAUJAHR 2019-11  \nNETZ 400V 3N~",
       "stats": [
         {
-          "timeToFirstToken": 6463.722,
-          "tokensPerSecond": 57.15191717027952,
+          "timeToFirstToken": 6632.584,
+          "tokensPerSecond": 53.55114841953384,
           "cacheTokens": 0,
-          "promptTokens": 882,
-          "generatedTokens": 155,
-          "emittedTokens": 155,
+          "promptTokens": 896,
+          "generatedTokens": 106,
+          "emittedTokens": 106,
           "avgConcurrentSeq": 1,
           "backendDevice": "gpu"
         },
         {
-          "timeToFirstToken": 6511.312,
-          "tokensPerSecond": 55.960536207522786,
+          "timeToFirstToken": 6668.693,
+          "tokensPerSecond": 51.93962019152735,
           "cacheTokens": 0,
           "promptTokens": 890,
-          "generatedTokens": 53,
-          "emittedTokens": 53,
+          "generatedTokens": 48,
+          "emittedTokens": 48,
           "avgConcurrentSeq": 1,
           "backendDevice": "gpu"
         }
@@ -119,10 +119,10 @@
     },
     {
       "id": "philips-gastada",
-      "ms": 17689,
+      "ms": 17526,
       "campos": {
         "marca": "Philips",
-        "marcaLeida": "PHILIPS",
+        "marcaLeida": "PHILIPS Achieva 3.0T",
         "modelo": "Achieva 3.0T",
         "modeloCatalogo": "459800",
         "serie": "88231AB",
@@ -130,25 +130,25 @@
         "edadAnios": 14,
         "modalidad": "MR"
       },
-      "textoLeido": "PHILIPS, Achieva 3.0T\nPHILIPS    \n\nAchieva 3.0T  \nMODEL  \n459800  \nSN  \n88231AB  \nMFG DATE  \n2012-09  \nMade in the Netherlands",
+      "textoLeido": "PHILIPS Achieva 3.0T\nPHILIPS\nAchieva 3.0T\nMODEL 459800\nSN 88231AB\nMFG DATE 2012-09\nMade in the Netherlands",
       "stats": [
         {
-          "timeToFirstToken": 6458.71,
-          "tokensPerSecond": 57.71257623263656,
+          "timeToFirstToken": 6988.783,
+          "tokensPerSecond": 45.22533523279741,
           "cacheTokens": 0,
-          "promptTokens": 882,
-          "generatedTokens": 122,
-          "emittedTokens": 122,
+          "promptTokens": 896,
+          "generatedTokens": 10,
+          "emittedTokens": 10,
           "avgConcurrentSeq": 1,
           "backendDevice": "gpu"
         },
         {
-          "timeToFirstToken": 6462.253,
-          "tokensPerSecond": 57.97721495452287,
+          "timeToFirstToken": 6744.487,
+          "tokensPerSecond": 57.37261523114139,
           "cacheTokens": 0,
           "promptTokens": 890,
-          "generatedTokens": 58,
-          "emittedTokens": 58,
+          "generatedTokens": 49,
+          "emittedTokens": 49,
           "avgConcurrentSeq": 1,
           "backendDevice": "gpu"
         }
