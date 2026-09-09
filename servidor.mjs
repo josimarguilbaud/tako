@@ -5,7 +5,7 @@
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { loadModel, transcribe, WHISPER_BASE_Q8_0, WHISPER_SMALL_Q8_0, QWEN3_1_7B_INST_Q4, QWEN3_4B_INST_Q4_K_M, VISIONPSY_NANO_460M_MULTIMODAL_Q4_K_M_1, MMPROJ_VISIONPSY_NANO_460M_MULTIMODAL_Q8_0_1 } from "@qvac/sdk";
 import { extraer, faltantesDe, preguntaDe } from "./extraer.mjs";
@@ -137,6 +137,16 @@ const servidor = http.createServer(async (req, res) => {
       res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
       return res.end(readFileSync(path.join(DIR, "index.html")));
     }
+    // Las tipografias se sirven desde el repo, no desde un CDN: una app que funciona
+    // sin conexion no puede depender de una descarga externa para verse bien.
+    if (req.method === "GET" && url.pathname.startsWith("/tipografias/")) {
+      const nombre = path.basename(url.pathname);
+      const ruta = path.join(DIR, "tipografias", nombre);
+      if (!existsSync(ruta)) return json(res, 404, { error: "no existe" });
+      const tipo = nombre.endsWith(".woff2") ? "font/woff2" : "text/css; charset=utf-8";
+      res.writeHead(200, { "content-type": tipo, "cache-control": "public, max-age=604800" });
+      return res.end(readFileSync(ruta));
+    }
     if (req.method === "GET" && url.pathname === "/base") {
       const obs = leer();
       return json(res, 200, { modelo: NOMBRE_MODELO, total: obs.length, resumen: resumen(obs) });
@@ -185,7 +195,13 @@ const servidor = http.createServer(async (req, res) => {
       const faltantes = faltantesDe(datos);
       return json(res, 200, { faltantes, pregunta: preguntaDe(faltantes, texto ?? "") });
     }
-    if (req.method === "POST" && url.pathname === "/reiniciar") { escribir([]); return json(res, 200, { ok: true }); }
+    if (req.method === "POST" && url.pathname === "/reiniciar") {
+      // Se BORRA el archivo, no se vacia: asi leer() vuelve a sembrar el ejemplo y el
+      // Cliente 360 recupera el conflicto. Un tablero vacio no demuestra nada.
+      if (existsSync(ARCHIVO)) rmSync(ARCHIVO);
+      leer();
+      return json(res, 200, { ok: true });
+    }
     json(res, 404, { error: "no existe" });
   } catch (e) {
     console.error(e);

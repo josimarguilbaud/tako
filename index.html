@@ -3,71 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consta · laboratorio</title>
+<title>Consta</title>
 <style>
+  /* Sistema de diseño: ver DESIGN.md. Acta de campo, no panel de control.
+     Las tipografías salen del repo, no de un CDN: sin conexión no hay CDN. */
+  @import url("/tipografias/tipografias.css");
+
   :root{
-    --papel:#F6F5F8; --hoja:#fff; --tinta:#16151C; --media:#4B4857; --suave:#6E6B7C;
-    --sello:#4A3AA8; --sello-tenue:#EDEAF9; --sello-borde:#CFC7F0;
-    --ambar:#8A5B00; --ambar-tenue:#FBF1DD; --ambar-borde:#E6CFA0;
-    --rojo:#A8332B; --rojo-tenue:#F8EBEA; --linea:#DEDAE6; --linea-f:#C6C0D4;
+    --papel:#F1F4F4; --hoja:#FFFFFF; --tinta:#14181A; --media:#5E696D; --suave:#8A9498;
+    --linea:#D3DADC; --linea-f:#E4E9EA; --metal:#E7ECED;
+    --sello:#075A63; --sello-tenue:#E2EEEF; --sello-borde:#075A63;
+    --ambar:#8A5A00; --ambar-tenue:#FAF0DC; --ambar-borde:#8A5A00;
+    --rojo:#8D3030; --rojo-tenue:#F9EBEA;
+    --display:"Archivo","Arial Narrow",sans-serif;
+    --texto:"Public Sans","Segoe UI",system-ui,sans-serif;
+    --dato:"JetBrains Mono",Consolas,monospace;
   }
+  /* El sótano. Rediseñado, no invertido: el ámbar sube para seguir siendo el que grita. */
+  @media (prefers-color-scheme:dark){:root:not([data-tema="claro"]){
+    --papel:#0F1315; --hoja:#171D1F; --tinta:#E6ECED; --media:#96A2A6; --suave:#6C787C;
+    --linea:#2A3437; --linea-f:#202829; --metal:#232B2D;
+    --sello:#4FC3CE; --sello-tenue:#103336; --sello-borde:#2E6E74;
+    --ambar:#D9A64E; --ambar-tenue:#2C2415; --ambar-borde:#5A4520;
+    --rojo:#E08A82; --rojo-tenue:#2E1A19;
+  }}
+
   *{box-sizing:border-box}
-  body{margin:0;background:var(--papel);color:var(--tinta);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
-  header{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--linea);background:var(--hoja)}
-  header h1{font:400 26px Georgia,serif;margin:0;letter-spacing:-.01em}
-  header .lema{color:var(--sello);font-style:italic}
-  header .modelo{margin-left:auto;font-family:Consolas,monospace;font-size:12px;color:var(--suave)}
-  main{display:grid;grid-template-columns:minmax(360px,1fr) minmax(420px,1.3fr);gap:20px;padding:20px 24px;max-width:1400px;margin:0 auto}
-  @media (max-width:900px){main{grid-template-columns:1fr}}
-  .tarjeta{background:var(--hoja);border:1px solid var(--linea);border-radius:6px;padding:18px 20px;margin-bottom:16px}
-  h2{font:400 20px Georgia,serif;margin:0 0 12px}
-  h3{font-size:17.5px;margin:18px 0 6px}
-  label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave);font-weight:700;margin:12px 0 4px}
-  input[type=text],textarea{width:100%;font:inherit;padding:9px 11px;border:1px solid var(--linea-f);border-radius:4px;background:var(--papel);color:var(--tinta)}
-  textarea{min-height:88px;resize:vertical}
-  .fila{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-  button{font:inherit;font-weight:600;padding:9px 14px;border-radius:4px;border:1px solid var(--sello);background:var(--sello);color:#fff;cursor:pointer}
-  button.sec{background:var(--hoja);color:var(--sello)}
-  button.peligro{background:var(--hoja);color:var(--rojo);border-color:var(--rojo);font-weight:500;font-size:13px;padding:6px 10px}
-  button:disabled{opacity:.45;cursor:default}
+  body{margin:0;background:var(--papel);color:var(--tinta);font:16px/1.55 var(--texto);-webkit-font-smoothing:antialiased}
+
+  header{display:flex;align-items:baseline;gap:14px;padding:16px 24px;border-bottom:1px solid var(--linea);background:var(--hoja);flex-wrap:wrap}
+  header h1{font:700 26px var(--display);margin:0;letter-spacing:-.022em}
+  header .lema{color:var(--media);font-size:14px}
+  header .modelo{margin-left:auto;font-family:var(--dato);font-size:11px;letter-spacing:.04em;color:var(--sello)}
+
+  /* Una columna hasta 900; luego captura a la izquierda y expediente a la derecha. */
+  main{display:grid;grid-template-columns:minmax(340px,1fr) minmax(420px,1.25fr);gap:24px;padding:24px;max-width:1200px;margin:0 auto}
+  @media (max-width:900px){main{grid-template-columns:1fr;padding:16px;gap:16px}}
+
+  /* No es una tarjeta: es una hoja del acta. Sin sombra, radio casi plano. */
+  .tarjeta{background:var(--hoja);border:1px solid var(--linea);border-radius:4px;padding:20px;margin-bottom:16px}
+  h2{font:700 22px var(--display);margin:0 0 4px;letter-spacing:-.01em}
+  h3{font:600 15px var(--texto);margin:20px 0 6px;letter-spacing:.01em}
+  label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--suave);font-weight:600;margin:16px 0 5px}
+
+  input[type=text],textarea,select{width:100%;font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--linea);border-radius:3px;background:var(--hoja);color:var(--tinta)}
+  input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--sello);outline-offset:1px;border-color:var(--sello)}
+  textarea{min-height:96px;resize:vertical;line-height:1.5}
+  select{max-width:320px}
+
+  .fila{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  button{font:600 15px var(--texto);padding:11px 16px;border-radius:3px;border:1px solid var(--sello);background:var(--sello);color:var(--hoja);cursor:pointer}
+  button.sec{background:transparent;color:var(--sello)}
+  button.peligro{background:transparent;color:var(--rojo);border-color:var(--rojo);font-weight:500;font-size:13px;padding:7px 11px}
+  button:disabled{opacity:.4;cursor:default}
+  button:focus-visible{outline:2px solid var(--sello);outline-offset:2px}
   button.grabando{background:var(--rojo);border-color:var(--rojo);animation:pulso 1s infinite}
   @keyframes pulso{50%{opacity:.6}}
-  .estado{font-size:13px;color:var(--suave);min-height:18px;margin-top:8px}
+  @media (max-width:560px){.fila button{flex:1 1 auto}}
+
+  .estado{font-size:13.5px;color:var(--media);min-height:18px;margin-top:10px}
   .oculto{display:none}
-  select{font:inherit;padding:7px 9px;border:1px solid var(--linea-f);border-radius:4px;background:var(--papel);color:var(--tinta);max-width:320px}
-  .nivel{flex:1;min-width:120px;height:10px;background:var(--linea);border-radius:5px;overflow:hidden}
+  .nivel{flex:1;min-width:120px;height:8px;background:var(--linea);border-radius:4px;overflow:hidden}
   .nivel i{display:block;height:100%;width:100%;background:var(--sello);transform-origin:left;transform:scaleX(0);transition:transform .08s linear}
-  table{border-collapse:collapse;width:100%;font-size:14px}
-  th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--suave);padding:6px 8px;border-bottom:1px solid var(--linea-f)}
-  td{padding:8px;border-bottom:1px solid var(--linea);vertical-align:top}
-  tr.clic{cursor:pointer} tr.clic:hover td{background:var(--sello-tenue)}
-  tr.abierta td{background:var(--sello-tenue)}
-  .mono{font-family:Consolas,monospace;font-variant-numeric:tabular-nums}
-  .chip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:3px;border:1px solid;margin-right:6px}
-  .chip.Alta{color:var(--sello);background:var(--sello-tenue);border-color:var(--sello-borde)}
+
+  /* Filas regladas. La línea separa; la sombra no existe. */
+  table{border-collapse:collapse;width:100%;font-size:14.5px}
+  th{text-align:left;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--suave);font-weight:600;padding:0 8px 8px 0;border-bottom:1px solid var(--linea)}
+  td{padding:12px 8px 12px 0;border-bottom:1px solid var(--linea-f);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  tr.clic{cursor:pointer}
+  tr.clic:hover td{background:var(--metal)}
+  tr.abierta td{background:var(--metal)}
+  .mono,.num{font-family:var(--dato);font-variant-numeric:tabular-nums}
+
+  /* La marca de procedencia: la pieza central. Cuatro orígenes y solo cuatro. */
+  .marca{display:inline-flex;align-items:center;font-family:var(--dato);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;white-space:nowrap}
+  .marca.dicho{color:var(--suave);border:1px solid var(--linea)}
+  .marca.leido{color:var(--tinta);background:var(--metal);border:1px solid var(--linea)}
+  .marca.deducido{color:var(--ambar);background:var(--ambar-tenue);border:1px solid var(--ambar-borde)}
+  .marca.manual{color:var(--sello);background:var(--sello-tenue);border:1px solid var(--sello-borde)}
+
+  .chip{display:inline-block;font-family:var(--dato);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;border:1px solid;margin-right:6px}
+  .chip.Alta{color:var(--tinta);background:var(--metal);border-color:var(--linea)}
   .chip.Media,.chip.Baja{color:var(--ambar);background:var(--ambar-tenue);border-color:var(--ambar-borde)}
   .chip.Conflicto{color:var(--rojo);background:var(--rojo-tenue);border-color:var(--rojo)}
-  .pugna{font-family:Consolas,monospace;font-size:12px;color:var(--ambar);background:var(--ambar-tenue);border:1px solid var(--ambar-borde);border-radius:3px;padding:0 6px;margin-left:5px}
-  .porque{font-size:12.5px;color:var(--suave)}
-  .aviso{margin-top:12px;padding:10px 12px;border-radius:4px;font-size:14px}
-  .aviso.descartes{background:var(--ambar-tenue);border:1px solid var(--ambar-borde);color:var(--tinta)}
-  .aviso.pregunta{background:var(--sello-tenue);border:1px solid var(--sello-borde)}
-  .aviso.pregunta b{color:var(--sello)}
-  .rastro{margin:0 0 14px;padding:10px 12px;background:var(--papel);border:1px solid var(--linea);border-radius:4px;font-size:13px}
-  .rastro .r{padding:7px 0;border-bottom:1px dashed var(--linea)} .rastro .r:last-child{border-bottom:0}
-  .rastro .r b{font-family:Consolas,monospace;font-weight:500;color:var(--sello)}
-  .rastro .r i{color:var(--media)}
-  details{margin-top:10px;font-size:13px} summary{cursor:pointer;color:var(--suave)}
-  pre{background:var(--papel);padding:10px;border-radius:4px;overflow:auto;font-size:12px}
-  .vacio{color:var(--suave);font-style:italic}
+
+  /* Dos personas, dos números. La celda se dimensiona para dos desde el principio. */
+  .pugna{display:inline-block;font-family:var(--dato);font-size:15px;font-weight:700;color:var(--rojo);margin-left:6px}
+  .porque{font-size:12.5px;color:var(--suave);display:block;margin-top:3px}
+
+  .aviso{margin-top:14px;padding:11px 13px;border-radius:3px;font-size:14px;line-height:1.5}
+  .aviso.descartes{background:var(--ambar-tenue);border:1px solid var(--ambar-borde)}
+  .aviso.descartes b{color:var(--ambar)}
+  .aviso.pregunta{background:transparent;border:0;padding:14px 0 0;font:500 18px/1.3 var(--display);letter-spacing:-.008em}
+  .aviso.pregunta b{font-weight:500;color:var(--media);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-family:var(--texto);display:block;margin-bottom:5px}
+
+  .rastro{margin:0 0 14px;padding:12px 14px;background:var(--papel);border:1px solid var(--linea);border-radius:3px;font-size:13.5px}
+  .rastro .r{padding:9px 0;border-bottom:1px solid var(--linea-f)}
+  .rastro .r:last-child{border-bottom:0}
+  .rastro .r b{font-family:var(--dato);font-weight:500;font-size:12px;color:var(--tinta)}
+  .rastro .r i{color:var(--media);font-style:normal}
+
+  details{margin-top:14px;font-size:13px}
+  summary{cursor:pointer;color:var(--suave);font-size:12.5px}
+  pre{background:var(--papel);border:1px solid var(--linea-f);padding:12px;border-radius:3px;overflow:auto;font:12px/1.6 var(--dato)}
+  .vacio{color:var(--suave)}
   .cliente-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-  .cliente-cab small{color:var(--suave)}
+  .cliente-cab small{color:var(--suave);font-size:12.5px}
+
+  /* El único momento de autor: la corrección se asienta una vez. */
+  @keyframes asentar{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .corregido-nuevo{animation:asentar .25s ease-out}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <header>
   <h1>Consta</h1>
-  <span class="lema">laboratorio · que conste quién lo vio</span>
+  <span class="lema">Que conste quién lo vio</span>
   <span class="modelo" id="modelo">cargando…</span>
 </header>
 
@@ -110,7 +163,7 @@
       <div id="transcripcion" class="estado"></div>
       <div id="lugar" style="margin:6px 0 10px"></div>
       <table>
-        <thead><tr><th>Equipo</th><th>Cantidad</th><th>Marca</th><th>Modelo</th><th>Antigüedad</th></tr></thead>
+        <thead><tr><th>Equipo</th><th>Cantidad</th><th>Marca</th><th>Modelo</th><th>Antigüedad</th><th>Procedencia</th></tr></thead>
         <tbody id="equipos"></tbody>
       </table>
       <div id="descartes" class="aviso descartes oculto"></div>
@@ -128,7 +181,7 @@
       <h2>Cliente 360</h2>
       <div id="base"><p class="vacio">Todavía no hay observaciones guardadas.</p></div>
       <div class="fila" style="justify-content:flex-end;margin-top:18px">
-        <button class="peligro" id="reiniciar">Borrar todas las observaciones</button>
+        <button class="peligro" id="reiniciar">Volver a las observaciones de ejemplo</button>
       </div>
     </div>
   </section>
@@ -271,7 +324,8 @@ function pintarResultado(r) {
     <td><b>${esc(q.modalidad)}</b></td>
     <td class="mono">${q.cantidad}${q.cantidadAproximada ? ' <span class="pugna">aprox.</span>' : ""}</td>
     <td>${esc(q.marca)}</td><td>${esc(q.modelo)}${q.placa?.serie ? ` <span class="porque">SN ${esc(q.placa.serie)}</span>` : ""}</td>
-    <td>${q.placa?.anioFabricacion ? `${q.edadAnios} años <span class="porque">(placa, ${q.placa.anioFabricacion}${q.placa.confirma ? `; dijiste ≈${q.placa.confirma}` : ""})</span>` : q.edadAnios ? `≈${q.edadAnios} años` : q.edadCualitativa ? esc(q.edadCualitativa) : "—"}</td></tr>`).join("") || `<tr><td colspan="5" class="vacio">No se reconoció ningún equipo.</td></tr>`;
+    <td>${q.placa?.anioFabricacion ? `${q.edadAnios} años <span class="porque">(placa, ${q.placa.anioFabricacion}${q.placa.confirma ? `; dijiste ≈${q.placa.confirma}` : ""})</span>` : q.edadAnios ? `≈${q.edadAnios} años` : q.edadCualitativa ? esc(q.edadCualitativa) : "—"}</td>
+    <td><span class="marca ${q.placa ? "leido" : "dicho"}">${q.placa ? "leído en la placa" : "dicho"}</span></td></tr>`).join("") || `<tr><td colspan="6" class="vacio">No se reconoció ningún equipo.</td></tr>`;
   const d = $("descartes"), om = r.omisiones ?? [];
   const partes = [];
   if (r.descartes.length) partes.push(`<b>La verificación descartó ${r.descartes.length} dato${r.descartes.length > 1 ? "s" : ""} que el modelo propuso pero la frase no dice:</b><br>${r.descartes.map(esc).join("<br>")}`);
@@ -377,7 +431,7 @@ $("guardar").onclick = async () => {
     await cargarBase();
   } catch (e) { $("guardado").textContent = "Error: " + e.message; }
 };
-$("reiniciar").onclick = async () => { if (confirm("¿Borrar todas las observaciones del laboratorio?")) { await post("/reiniciar", "{}"); abierta = null; await cargarBase(); } };
+$("reiniciar").onclick = async () => { if (confirm("¿Borrar lo capturado y volver a las dos observaciones de ejemplo?")) { await post("/reiniciar", "{}"); abierta = null; await cargarBase(); } };
 
 async function cargarBase() {
   const b = await fetch("/base").then((r) => r.json());
