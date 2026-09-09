@@ -10,6 +10,7 @@
 // "lee todo" se come la cabecera (pierde la marca en 3 de 4) o se come los valores de
 // las filas. Una pregunta por bloque acierta 4 de 4 en ambos. Un modelo de 460M
 // responde bien a preguntas concretas y mal a encargos amplios.
+import { createHash } from "node:crypto";
 import { completion } from "@qvac/sdk";
 import { plano } from "./verificar.mjs";
 
@@ -136,7 +137,23 @@ export function camposDePlaca(cabecera, filas) {
   };
 }
 
-export async function leerPlaca(modelId, rutaImagen) {
+/**
+ * La huella deja por escrito qué produjo esta lectura: qué modelo, con qué cuantización,
+ * con qué prompts y sobre qué imagen. Es la pregunta que hace cualquiera que audite un
+ * dato meses después: ¿quién dijo que este equipo es de 2017? Los digest son de la
+ * entrada, no de nadie: no identifican a una persona ni permiten reconstruir la foto.
+ */
+export function huellaDe({ modelo, cuantizacion, prompts, imagen, hoy = new Date() }) {
+  const digest = (x) => createHash("sha256").update(x).digest("hex").slice(0, 16);
+  return {
+    modelo, cuantizacion,
+    prompts: (prompts ?? []).map((p) => digest(String(p))),
+    imagen: imagen ? digest(imagen) : null,
+    leido: hoy.toISOString(),
+  };
+}
+
+export async function leerPlaca(modelId, rutaImagen, opciones = {}) {
   const t0 = Date.now();
   const pase = async (prompt) => {
     const r = completion({
@@ -152,6 +169,12 @@ export async function leerPlaca(modelId, rutaImagen) {
   return {
     campos: camposDePlaca(cabecera.texto, filas.texto),
     textoLeido: `${cabecera.texto}\n${filas.texto}`.trim(),
+    huella: huellaDe({
+      modelo: opciones.modelo ?? "VisionPsy-Nano-460M",
+      cuantizacion: opciones.cuantizacion ?? "q4_k_m (+ mmproj q8_0)",
+      prompts: [PREGUNTA_CABECERA, PREGUNTA_FILAS],
+      imagen: opciones.imagen ?? null,
+    }),
     ms: Date.now() - t0,
     stats: [cabecera.stats, filas.stats],
   };

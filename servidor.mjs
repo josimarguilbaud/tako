@@ -184,7 +184,7 @@ const servidor = http.createServer(async (req, res) => {
       // Se guarda la última foto para poder reproducir una lectura mala.
       const ruta = path.join(DATOS, `ultima-placa.${ext}`);
       writeFileSync(ruta, imagen);
-      const r = await leerPlaca(await modeloDePlacas(), ruta);
+      const r = await leerPlaca(await modeloDePlacas(), ruta, { imagen });
       return json(res, 200, r);
     }
     // Recalcular la repregunta cuando la placa rellena marca, modelo o edad. Va por el
