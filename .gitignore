@@ -4,6 +4,9 @@ node_modules/
 # Datos del laboratorio en uso: grabaciones de voz reales, la última foto recibida y
 # las observaciones de quien lo esté usando. Nada de eso se publica.
 datos/
+# Y el libro del segundo equipo, el que se levanta con --datos=datos-equipo-2 para
+# ensenar la fusion. Es tan local como el primero.
+datos-equipo-*/
 
 # Sistema
 .DS_Store

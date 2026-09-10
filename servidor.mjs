@@ -12,40 +12,63 @@ import { loadModel, transcribe, WHISPER_BASE_Q8_0, WHISPER_SMALL_Q8_0, QWEN3_1_7
 import { extraer, faltantesDe, preguntaDe, cantidadesPorModalidad } from "./extraer.mjs";
 import { leerPlaca } from "./placa.mjs";
 import { transcripcionSospechosa } from "./verificar.mjs";
-import { pinCorrecto, esperaTras, tecnicoPublico, registrar, observadorDe, contrastar, coberturaDe } from "./tecnicos.mjs";
+import { pinCorrecto, esperaTras, tecnicoPublico, registrar, observadorDe, contrastar, coberturaDe, conflictosDe } from "./tecnicos.mjs";
+import { conUid, etiquetar, empaquetar, revisarPaquete, fundir, pugnasNuevas } from "./libro.mjs";
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
-const DATOS = path.join(DIR, "datos");
+
+// Se puede levantar un SEGUNDO equipo en la misma maquina, con su propio libro y su propio
+// padron, para ensenar la fusion de verdad en vez de contarla:
+//
+//   node servidor.mjs --puerto=3211 --datos=datos-equipo-2
+//
+// Van como banderas y no solo como variables de entorno porque en PowerShell, que es donde
+// esto se usa, `DATOS=x node servidor.mjs` no hace lo que parece: no existe el prefijo de
+// variable en linea. Las variables de entorno siguen valiendo para quien use bash.
+const BANDERAS = Object.fromEntries(
+  process.argv.slice(2)
+    .filter((a) => a.startsWith("--"))
+    .map((a) => { const i = a.indexOf("="); return i < 0 ? [a.slice(2), "true"] : [a.slice(2, i), a.slice(i + 1)]; })
+);
+const opcion = (nombre, env) => BANDERAS[nombre] ?? process.env[env] ?? "";
+
+const carpetaDatos = opcion("datos", "DATOS") || "datos";
+const DATOS = path.isAbsolute(carpetaDatos) ? carpetaDatos : path.join(DIR, carpetaDatos);
 mkdirSync(DATOS, { recursive: true });
 const ARCHIVO = path.join(DATOS, "observaciones.json");
-const PUERTO = Number(process.env.PUERTO || 3210);
+const PUERTO = Number(opcion("puerto", "PUERTO") || 3210);
 // Extracción: por defecto se cargan LOS DOS Qwen3. Se extrae con el 1.7B (rápido) y, si el
 // verificador detecta que omitió un equipo mencionado, se reintenta con el 4B (fiable).
 // QMODEL=4b usa solo el grande; QMODEL=1.7b usa solo el rápido.
-const USA_4B = process.env.QMODEL === "4b";
-const SOLO_RAPIDO = process.env.QMODEL === "1.7b";
+const USA_4B = opcion("qmodel", "QMODEL") === "4b";
+const SOLO_RAPIDO = opcion("qmodel", "QMODEL") === "1.7b";
 // Voz: "small" por defecto. El "base" (81 MB) se equivoca con vocabulario técnico en
 // español hablado real ("resornadores", "tomohorazo"); QVOZ=base lo vuelve a activar.
-const VOZ_BASE = process.env.QVOZ === "base";
+const VOZ_BASE = opcion("qvoz", "QVOZ") === "base";
 const NOMBRE_MODELO = `Whisper ${VOZ_BASE ? "base" : "small"} + Qwen3 ${USA_4B ? "4B" : SOLO_RAPIDO ? "1.7B" : "1.7B (→ 4B si omite algo)"}`;
 // Glosario que sesga a Whisper hacia las palabras del dominio (nombres, modalidades).
 const VOCABULARIO = "Hospital DemoCare Pacific, Clínica DemoCare Light, Centro Médico DemoCare Valley. Resonadores, resonancia magnética, tomógrafo, tomografía, ecógrafos, ultrasonido, rayos X, MR, CT. Marcas: NovaMed, Aurelia Health, Orion Imaging, HelixCare. En Panamá.";
 
-// La primera vez, el laboratorio arranca con dos observaciones de ejemplo que NO coinciden
-// en la cantidad de resonadores. Un Cliente 360 vacío no enseña lo único que hace distinto
-// a esto: conservar el desacuerdo en vez de elegir un número. Se copian una sola vez; a
-// partir de ahí son tuyas, y «Borrar todas las observaciones» las quita para siempre.
+// La primera vez, el laboratorio arranca con UNA observacion: la que levanto la gente de
+// este equipo. Antes arrancaba con dos que no coincidian entre si, y eso era hacer trampa
+// con la propia tesis: en campo las dos personas no comparten tablet, asi que el
+// desacuerdo NO puede estar servido al abrir la app. Aparece cuando se funden los dos
+// libros, y para eso viene datos-ejemplo/libro-de-luis.json en el repositorio.
 const EJEMPLO = path.join(DIR, "datos-ejemplo", "observaciones.json");
+// El libro siempre se lee y se escribe con uid puesto y etiquetado por fecha. La etiqueta
+// OBS-NNN es derivada: despues de fundir el libro de otro equipo se renumera sola, sin
+// huecos ni repetidas, y nadie tiene que fiarse de la numeracion ajena.
 function leer() {
   if (!existsSync(ARCHIVO) && existsSync(EJEMPLO)) copyFileSync(EJEMPLO, ARCHIVO);
-  return existsSync(ARCHIVO) ? JSON.parse(readFileSync(ARCHIVO, "utf-8")) : [];
+  return existsSync(ARCHIVO) ? etiquetar(conUid(JSON.parse(readFileSync(ARCHIVO, "utf-8")))) : [];
 }
-const escribir = (obs) => writeFileSync(ARCHIVO, JSON.stringify(obs, null, 2));
+const escribir = (obs) => writeFileSync(ARCHIVO, JSON.stringify(etiquetar(conUid(obs)), null, 2));
 
-// Cuales de las guardadas vinieron sembradas. Se sabe por su id, que es el del archivo
-// de ejemplo: asi sigue funcionando aunque encima ya haya observaciones de verdad.
+// Cuales de las guardadas vinieron sembradas con el laboratorio. Se sabe por su uid y no
+// por la etiqueta: la etiqueta se renumera al fundir el libro de otro equipo, el uid sale
+// del contenido y no cambia nunca.
 const IDS_SEMBRADOS = new Set(
-  existsSync(EJEMPLO) ? JSON.parse(readFileSync(EJEMPLO, "utf-8")).map((o) => o.id) : []
+  existsSync(EJEMPLO) ? conUid(JSON.parse(readFileSync(EJEMPLO, "utf-8"))).map((o) => o.uid) : []
 );
 
 // ---------- el padron ----------
@@ -112,7 +135,7 @@ function resumen(observaciones) {
     for (const m of Object.values(c.modalidades)) {
       const ultimoPorObservador = {};
       for (const r of m.reportes) {
-        const q = r.observador.id;
+        const q = r.observador.clave;
         if (!ultimoPorObservador[q] || r.fecha > ultimoPorObservador[q].fecha) ultimoPorObservador[q] = r;
       }
       const ultimos = Object.values(ultimoPorObservador);
@@ -177,7 +200,7 @@ const servidor = http.createServer(async (req, res) => {
     }
     if (req.method === "GET" && url.pathname === "/base") {
       const obs = leer();
-      const ejemplos = obs.filter((o) => IDS_SEMBRADOS.has(o.id)).map((o) => o.id);
+      const ejemplos = obs.filter((o) => IDS_SEMBRADOS.has(o.uid)).map((o) => o.id);
       return json(res, 200, { modelo: NOMBRE_MODELO, total: obs.length, ejemplos, resumen: resumen(obs) });
     }
 
@@ -203,7 +226,7 @@ const servidor = http.createServer(async (req, res) => {
       }
       FALLOS.delete(id);
       const sesion = randomBytes(24).toString("hex");
-      SESIONES.set(sesion, { id: tecnico.id, nombre: tecnico.nombre, verificado: true });
+      SESIONES.set(sesion, { id: tecnico.id, uid: tecnico.uid ?? null, clave: String(tecnico.uid ?? tecnico.id), nombre: tecnico.nombre, verificado: true });
       console.log(`entró ${tecnico.nombre} (${tecnico.id})`);
       return json(res, 200, { ok: true, sesion, tecnico: tecnicoPublico(tecnico) });
     }
@@ -214,7 +237,7 @@ const servidor = http.createServer(async (req, res) => {
       if (r.error) return json(res, 400, { error: r.error });
       padron.push(r.tecnico); escribirPadron(padron);
       const sesion = randomBytes(24).toString("hex");
-      SESIONES.set(sesion, { id: r.tecnico.id, nombre: r.tecnico.nombre, verificado: true });
+      SESIONES.set(sesion, { id: r.tecnico.id, uid: r.tecnico.uid ?? null, clave: String(r.tecnico.uid ?? r.tecnico.id), nombre: r.tecnico.nombre, verificado: true });
       return json(res, 200, { ok: true, sesion, tecnico: tecnicoPublico(r.tecnico) });
     }
     if (req.method === "POST" && url.pathname === "/salir") {
@@ -228,7 +251,7 @@ const servidor = http.createServer(async (req, res) => {
       const yo = quienEs(req);
       if (!yo) return json(res, 401, { error: "Entra con tu PIN antes de guardar." });
       const { json: datos } = JSON.parse((await cuerpo(req)).toString("utf-8"));
-      return json(res, 200, { contraste: contrastar(leer(), datos, yo.id) });
+      return json(res, 200, { contraste: contrastar(leer(), datos, yo.clave ?? yo.id) });
     }
     if (req.method === "POST" && url.pathname === "/transcribir") {
       const audio = await cuerpo(req);
@@ -259,11 +282,11 @@ const servidor = http.createServer(async (req, res) => {
       // Si al guardar ya había otro número puesto por otra persona, queda escrito que se
       // guardó sabiéndolo. Se calcula aquí y no se acepta del navegador: el desacuerdo no
       // se resuelve, se fecha.
-      const roce = contrastar(obs, datos, yo.id).filter((c) => c.discrepa);
+      const roce = contrastar(obs, datos, yo.clave ?? yo.id).filter((c) => c.discrepa);
       const nueva = {
         id: `OBS-${String(obs.length + 1).padStart(3, "0")}`,
         fecha: new Date().toISOString(),
-        observador: yo,
+        observador: { id: yo.id, uid: yo.uid ?? null, nombre: yo.nombre, verificado: true },
         fuente: fuente || "texto",
         texto,
         json: datos,
@@ -296,6 +319,50 @@ const servidor = http.createServer(async (req, res) => {
       if (!datos) return json(res, 400, { error: "falta la observación" });
       const faltantes = faltantesDe(datos);
       return json(res, 200, { faltantes, pregunta: preguntaDe(faltantes, texto ?? "") });
+    }
+    // ---------- el libro sale y entra ----------
+    // Tako corria DENTRO del dispositivo, que no es lo mismo que ser descentralizado: lo
+    // de Marta se quedaba en la tablet de Marta. Un libro se exporta a un archivo, el
+    // archivo viaja como quiera (USB, correo, lo que sea) y el otro equipo lo funde con
+    // el suyo. Sin servidor en medio y sin nube.
+    if (req.method === "GET" && url.pathname === "/libro") {
+      const yo = quienEs(req);
+      const paquete = empaquetar(leer(), yo);
+      res.writeHead(200, {
+        "content-type": "application/json; charset=utf-8",
+        "content-disposition": `attachment; filename="tako-libro-${new Date().toISOString().slice(0, 10)}.json"`,
+      });
+      return res.end(JSON.stringify(paquete, null, 2));
+    }
+    if (req.method === "POST" && url.pathname === "/fundir") {
+      const yo = quienEs(req);
+      if (!yo) return json(res, 401, { error: "Entra con tu PIN antes de fundir un libro." });
+      let paquete;
+      try { paquete = JSON.parse((await cuerpo(req)).toString("utf-8")); }
+      catch { return json(res, 400, { error: "Ese archivo no es JSON." }); }
+      const revisado = revisarPaquete(paquete);
+      if (revisado.error) return json(res, 400, { error: revisado.error });
+
+      const antes = leer();
+      const { libro, nuevas, repetidas } = fundir(antes, revisado.libro);
+      // Las pugnas se calculan ANTES de escribir: son la razon por la que uno funde, y
+      // hay que poder decirlas con nombre y numero en vez de dejarlas enterradas.
+      const pugnas = pugnasNuevas(antes, libro, conflictosDe);
+      escribir(libro);
+      console.log(`fundido: ${nuevas.length} nuevas, ${repetidas.length} repetidas, ${pugnas.length} pugnas nuevas`);
+      return json(res, 200, {
+        ok: true,
+        de: paquete.exportadoPor?.nombre ?? "un equipo sin firmar",
+        exportadoEl: paquete.exportadoEl ?? null,
+        selloAusente: !!revisado.selloAusente,
+        nuevas: nuevas.length,
+        repetidas: repetidas.length,
+        total: libro.length,
+        pugnas: pugnas.map((c) => ({
+          cliente: c.cliente, modalidad: c.modalidad, cantidades: c.cantidades,
+          quienes: c.reportes.map((r) => ({ nombre: r.nombre, cantidad: r.cantidad })),
+        })),
+      });
     }
     if (req.method === "POST" && url.pathname === "/reiniciar") {
       // Se BORRA el archivo, no se vacia: asi leer() vuelve a sembrar el ejemplo y el

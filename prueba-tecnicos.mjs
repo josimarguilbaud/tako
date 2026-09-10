@@ -75,10 +75,24 @@ igual("sin zona, no queda vacío", registrar(padron, { nombre: "Carlos Vega", pi
 // Un padrón con ids sueltos no debe reciclar un número ya usado.
 igual("el id no se recicla", registrar([{ id: "T-07", nombre: "X" }, { id: "T-02", nombre: "Y" }], { nombre: "Nuevo Uno", pin: "1111", hoy }).tecnico.id, "T-08");
 
+const obs = (id, quien, fecha, cliente, equipos, texto = "") => ({ id, fecha, observador: quien, fuente: "voz", texto, json: { cliente, ciudad: "Panamá", pais: "Panamá", equipos } });
+const eq = (modalidad, cantidad) => ({ modalidad, cantidad, cantidadAproximada: false, marca: "Unknown", modelo: "Unknown", edadAnios: 0, edadCualitativa: "" });
+
 // ---------------------------------------------------------------- el observador
 console.log("\nobservadorDe: lo viejo se lee, y se dice que no está verificado");
-igual("texto suelto de antes", observadorDe({ observador: "Field User 01" }), { id: "libre:field user 01", nombre: "Field User 01", verificado: false });
-igual("firmado de verdad", observadorDe({ observador: { id: "T-01", nombre: "Marta Gómez", verificado: true } }), { id: "T-01", nombre: "Marta Gómez", verificado: true });
+igual("texto suelto de antes", observadorDe({ observador: "Field User 01" }), { id: "libre:field user 01", uid: null, clave: "libre:field user 01", nombre: "Field User 01", verificado: false });
+igual("firmado de verdad", observadorDe({ observador: { id: "T-01", nombre: "Marta Gómez", verificado: true } }), { id: "T-01", uid: null, clave: "T-01", nombre: "Marta Gómez", verificado: true });
+// Con uid, la clave es el uid: el T-04 de una tablet y el T-04 de otra son dos personas,
+// y al fundir libros no pueden acabar sumadas en una sola fila del panel.
+igual("con uid, se agrupa por uid", observadorDe({ observador: { id: "T-04", uid: "abc123", nombre: "Nicole Him" } }).clave, "abc123");
+igual("mismo T-04, distinto uid: son dos", observadorDe({ observador: { id: "T-04", uid: "aaa", nombre: "Una" } }).clave === observadorDe({ observador: { id: "T-04", uid: "bbb", nombre: "Otra" } }).clave, false);
+igual("y la etiqueta que ve la gente no cambia", observadorDe({ observador: { id: "T-04", uid: "abc123", nombre: "Nicole Him" } }).id, "T-04");
+// Dos equipos que se numeraron por su cuenta: el panel tiene que verlos como dos filas.
+const dosT04 = coberturaDe([
+  obs("OBS-001", { id: "T-04", uid: "aaa", nombre: "Nicole Him" }, "2026-09-08T09:00:00.000Z", "H1", [eq("MR", 1)]),
+  obs("OBS-002", { id: "T-04", uid: "bbb", nombre: "Carlos Vega" }, "2026-09-09T09:00:00.000Z", "H2", [eq("CT", 1)]),
+], []);
+igual("dos T-04 de dos equipos son dos filas", dosT04.map((f) => f.nombre).sort(), ["Carlos Vega", "Nicole Him"]);
 igual("sin observador no se inventa nombre", observadorDe({}).nombre, "Sin nombre");
 igual("dos textos iguales son la misma persona", observadorDe({ observador: "Field User 01" }).id === observadorDe({ observador: "field user 01" }).id, true);
 
@@ -89,8 +103,6 @@ igual("sin equipos, nada", cantidadesPorModalidad({ equipos: [] }), {});
 igual("sin json, nada", cantidadesPorModalidad(null), {});
 
 // ---------------------------------------------------------------- el contraste
-const obs = (id, quien, fecha, cliente, equipos, texto = "") => ({ id, fecha, observador: quien, fuente: "voz", texto, json: { cliente, ciudad: "Panamá", pais: "Panamá", equipos } });
-const eq = (modalidad, cantidad) => ({ modalidad, cantidad, cantidadAproximada: false, marca: "Unknown", modelo: "Unknown", edadAnios: 0, edadCualitativa: "" });
 
 const base = [
   obs("OBS-001", { id: "T-01", nombre: "Marta Gómez" }, "2026-09-03T14:00:00.000Z", "Hospital DemoCare Pacific", [eq("MR", 2), eq("CT", 1)], "Dos resonadores y un tomógrafo."),

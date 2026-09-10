@@ -1,0 +1,94 @@
+{
+  "formato": "tako-libro",
+  "version": 1,
+  "exportadoPor": {
+    "id": "T-02",
+    "uid": "b2e1d4c6f8a01322",
+    "nombre": "Luis Ortega"
+  },
+  "exportadoEl": "2026-09-10T18:30:00.000Z",
+  "observaciones": [
+    {
+      "id": "OBS-001",
+      "fecha": "2026-09-09T09:05:44.000Z",
+      "observador": {
+        "id": "T-02",
+        "uid": "b2e1d4c6f8a01322",
+        "nombre": "Luis Ortega",
+        "verificado": true
+      },
+      "fuente": "voz",
+      "texto": "Estuve en Hospital DemoCare Pacific. Creo que tienen tres resonadores y un tomografo.",
+      "json": {
+        "cliente": "Hospital DemoCare Pacific",
+        "ciudad": "Panama City",
+        "pais": "Panama",
+        "equipos": [
+          {
+            "modalidad": "MR",
+            "cantidad": 3,
+            "cantidadAproximada": false,
+            "marca": "Unknown",
+            "modelo": "Unknown",
+            "edadAnios": 0,
+            "edadCualitativa": ""
+          },
+          {
+            "modalidad": "CT",
+            "cantidad": 1,
+            "cantidadAproximada": false,
+            "marca": "Unknown",
+            "modelo": "Unknown",
+            "edadAnios": 0,
+            "edadCualitativa": ""
+          }
+        ],
+        "clienteConfirmado": true,
+        "clienteDicho": "Hospital DemoCare Pacific",
+        "lugarDeLista": true
+      },
+      "uid": "d50df17fbb8facee"
+    },
+    {
+      "id": "OBS-002",
+      "fecha": "2026-09-09T16:40:00.000Z",
+      "observador": {
+        "id": "T-02",
+        "uid": "b2e1d4c6f8a01322",
+        "nombre": "Luis Ortega",
+        "verificado": true
+      },
+      "fuente": "voz",
+      "texto": "Estuve en Centro Medico DemoCare Valley, en David. Tienen cuatro ecografos y dos equipos de rayos X.",
+      "json": {
+        "cliente": "Centro Médico DemoCare Valley",
+        "ciudad": "David",
+        "pais": "Panamá",
+        "equipos": [
+          {
+            "modalidad": "Ultrasound",
+            "cantidad": 4,
+            "cantidadAproximada": false,
+            "marca": "Unknown",
+            "modelo": "Unknown",
+            "edadAnios": 0,
+            "edadCualitativa": ""
+          },
+          {
+            "modalidad": "X-Ray",
+            "cantidad": 2,
+            "cantidadAproximada": false,
+            "marca": "Unknown",
+            "modelo": "Unknown",
+            "edadAnios": 0,
+            "edadCualitativa": ""
+          }
+        ],
+        "clienteConfirmado": true,
+        "clienteDicho": "Centro Medico DemoCare Valley"
+      },
+      "uid": "b41ae318a9e6480e"
+    }
+  ],
+  "sello": "84f4409aa49136471ec36d91a62b8607fa6d589337c6716b56ce69a6d687535a"
+}

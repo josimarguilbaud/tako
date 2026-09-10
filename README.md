@@ -84,11 +84,13 @@ QVOZ=base node servidor.mjs    # Whisper base (82 MB): más rápido, peor con es
 HOST=0.0.0.0 node servidor.mjs # abrir a la red local (sin micrófono: eso exige HTTPS)
 ```
 
-En PowerShell las variables van aparte: `$env:QMODEL = "4b"; node servidor.mjs`.
+También valen como banderas, que es lo cómodo en PowerShell:
+`node servidor.mjs --qmodel=4b`.
 
-El laboratorio arranca con dos observaciones de ejemplo que **no coinciden** en la cantidad
-de resonadores, para que el Cliente 360 muestre un conflicto desde el primer momento. Se
-borran con el botón de abajo del todo.
+El laboratorio arranca con **una** observación de ejemplo: la que levantó la gente de este
+equipo. El conflicto no viene servido, aparece al fundir el libro de otro equipo (ver
+[Dos libros se hacen uno](#dos-libros-se-hacen-uno)). Se borra con el botón de abajo del
+todo.
 
 ---
 
@@ -116,7 +118,8 @@ el primer arranque los carga en memoria. A partir de ahí es rápido.
 ```
 node prueba-cantidades.mjs     # 24 pruebas de la capa de texto, sin modelo
 node prueba-placa-campos.mjs   # 21 pruebas de la capa de la placa, sin modelo
-node prueba-tecnicos.mjs       # 70 pruebas del PIN, el contraste y el panel, sin modelo
+node prueba-tecnicos.mjs       # 74 pruebas del PIN, el contraste y el panel, sin modelo
+node prueba-libro.mjs          # 49 pruebas de la fusión de libros, sin modelo
 node prueba-extraccion3.mjs    # 13 casos con Qwen3 1.7B (~2,5 min)
 node prueba-placas.mjs         # 4 placas con VisionPsy (~1,5 min)
 ```
@@ -184,6 +187,74 @@ la misma máquina no creen dos marcas.
 parte: la fotografiada se queda con la serie y la fecha, y las demás siguen sin marca ni
 edad, así que el sistema las sigue preguntando.
 
+## Dos libros se hacen uno
+
+Correr **dentro** del dispositivo no es lo mismo que ser **descentralizado**, y durante un
+tiempo Tako solo cumplía lo primero. Lo que veía Marta se quedaba en la tablet de Marta y
+lo de Luis en la suya. El desacuerdo entre dos personas, que es lo único que Tako hace y
+nadie más hace, solo aparecía cuando las dos observaciones habían nacido en el mismo
+equipo. En campo no se habrían encontrado nunca.
+
+Un libro se **exporta a un archivo**, el archivo viaja como quiera (USB, correo, el chat
+que sea) y el otro equipo lo **funde** con el suyo. Sin servidor en medio y sin nube.
+
+Las reglas de la fusión están en [`libro.mjs`](libro.mjs) y son cuatro:
+
+- **La identidad de una observación es su contenido, no su número.** `OBS-003` en una
+  tablet y `OBS-003` en otra son cosas distintas, así que la identidad es
+  `sha256(quién + cuándo + lo dicho + lo extraído)`. La etiqueta `OBS-NNN` es **derivada**:
+  se recalcula por fecha cada vez que el libro se escribe, así que después de fundir se
+  lee 001, 002, 003… sin huecos ni repetidas, y nadie tiene que fiarse de la numeración
+  ajena.
+- **Fundir es unir, nunca sustituir.** Ninguna observación se modifica y ninguna se
+  descarta. Da igual el orden en que lleguen los libros, da igual quién funde a quién, y
+  fundir dos veces el mismo archivo no duplica nada.
+- **El desacuerdo se conserva.** Es la razón de fundir, así que el informe lo dice con
+  nombre y número en vez de dejarlo enterrado en una tabla.
+- **El sello dice que el libro llegó entero, no quién lo escribió.** Es integridad, no
+  autoría: detecta un archivo cortado o editado por el camino. Firmar cada observación de
+  forma que se pueda probar la autoría es otra cosa y **todavía no está hecha**. Se dice
+  aquí porque el argumento de esta app es saber de dónde salió cada número.
+
+Al fundir, el informe queda así:
+
+```
+Fundido, y aparecieron desacuerdos
+Viene de Luis Ortega, exportado el 10 de septiembre de 2026 a las 01:30 p. m.
+
+  2  observaciones nuevas entraron al libro
+  0  ya las tenías
+  3  en total ahora
+
+  1 DESACUERDO QUE NO EXISTÍA
+  Hospital DemoCare Pacific · MR: Marta Gómez dice 2 y Luis Ortega dice 3
+  Nadie elige por ellos. Quedan los dos números, con nombre y fecha,
+  hasta que alguien vaya a contar.
+```
+
+### Probarlo
+
+El laboratorio arranca con **una** observación: la que levantó la gente de este equipo.
+Antes arrancaba con dos que no coincidían entre sí, y eso era hacer trampa con la propia
+tesis: en campo las dos personas no comparten tablet, así que el desacuerdo **no puede
+estar servido** al abrir la app.
+
+Para verlo aparecer hay dos caminos. El corto, con el libro que viene en el repositorio:
+
+> **Fundir un libro** &rarr; elige `datos-ejemplo/libro-de-luis.json`
+
+Y el largo, que es el de verdad: **levantar un segundo equipo** en la misma máquina, con
+su propio libro y su propio padrón.
+
+```bash
+node servidor.mjs --puerto=3211 --datos=datos-equipo-2 --qmodel=1.7b
+```
+
+Ese segundo Tako no comparte nada con el primero. Capturas algo ahí, exportas su libro,
+lo fundes en el primero y el desacuerdo aparece. Las banderas también valen como variables
+de entorno (`PUERTO`, `DATOS`, `QMODEL`, `QVOZ`) para quien use bash; van como banderas
+porque en PowerShell `DATOS=x node servidor.mjs` no hace lo que parece.
+
 ## Quién lo vio
 
 El lema promete dos cosas y durante un tiempo solo cumplió una. El «cuándo» siempre fue la
@@ -241,9 +312,10 @@ de entrada:
 | `T-02` Luis Ortega | Panamá Oeste y Colón | `1357` |
 | `T-03` Ana Ruiz | Azuero y Veraguas | `9024` |
 
-Marta y Luis firman las dos observaciones de ejemplo, que son las que no coinciden entre
-sí. Ana arranca en cero: un técnico sin actividad es justo el dato que un gerente de
-cuentas quiere ver. Con «No estoy en la lista» te das de alta en el equipo.
+Marta firma la observación con la que arranca este equipo; Luis firma las dos que trae
+`datos-ejemplo/libro-de-luis.json`, y por eso el desacuerdo aparece al fundir y no antes.
+Ana arranca en cero: un técnico sin actividad es justo el dato que un gerente de cuentas
+quiere ver. Con «No estoy en la lista» te das de alta en el equipo.
 
 ## Qué hay
 
@@ -255,8 +327,9 @@ cuentas quiere ver. Con «No estoy en la lista» te das de alta en el equipo.
 | `placa.mjs` | La lectura de la placa con VisionPsy y el parseo de sus campos |
 | `clientes.mjs` + `clientes.json` | Emparejar el nombre dicho con la lista de clientes, tolerando erratas |
 | `tecnicos.mjs` | El padrón, el PIN con sal, el contraste con lo que reportaron otros y la cobertura del panel |
+| `libro.mjs` | La identidad por contenido, el sello, y las reglas de fundir dos libros sin perder nada |
 | `placas/generar.mjs` | Genera las placas sintéticas de prueba con su verdad conocida |
-| `datos-ejemplo/` | Las dos observaciones y la cuadrilla con las que arranca el laboratorio |
+| `datos-ejemplo/` | La observación y la cuadrilla con las que arranca el laboratorio, y el libro de Luis para probar la fusión |
 
 ## Licencia
 

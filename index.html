@@ -412,6 +412,24 @@
   .tec.libre .ini { background: var(--suave) }
   .tec.libre .tec-txt small { color: var(--ambar) }
 
+  /* ---------- el libro va y viene ----------
+     Lo que hace que el desacuerdo entre dos personas exista de verdad: hasta aquí, dos
+     observaciones solo se encontraban si nacían en el mismo equipo. */
+  .fundido .linea { display: flex; align-items: baseline; gap: 10px; padding: 9px 0;
+                    border-bottom: 1px solid var(--linea-f); font-size: 14px }
+  .fundido .linea:last-child { border-bottom: 0 }
+  .fundido .linea b { font: 700 17px var(--dato); min-width: 34px; text-align: right }
+  .fundido .linea small { display: block; margin-top: 3px; color: var(--suave); font-size: 12.5px; line-height: 1.45 }
+  .fundido .de { color: var(--media); font-size: 13.5px; margin-bottom: 15px; line-height: 1.5 }
+  .fundido .de b { color: var(--tinta) }
+  .abierta-nueva { border: 1px solid var(--media-c); background: var(--media-f);
+                   border-radius: var(--r-m); padding: 12px; margin-top: 13px }
+  .abierta-nueva h4 { font: 700 11px var(--dato); letter-spacing: .09em; text-transform: uppercase;
+                      color: var(--ambar); margin-bottom: 9px }
+  .abierta-nueva .p { font-size: 13.5px; padding: 5px 0; color: var(--media) }
+  .abierta-nueva .p b { color: var(--tinta); font-family: var(--dato) }
+  .nota-sello { margin-top: 14px; color: var(--suave); font-size: 12px; line-height: 1.5 }
+
   /* En una tablet en el pasillo la fila no cabe de una. Se parte: arriba quién es,
      abajo sus números, que es el orden en que se leen igual. */
   @media (max-width: 620px) {
@@ -482,6 +500,9 @@
     <span>Cadena: <b>Whisper small &rarr; Qwen3 1.7B &rarr; VisionPsy</b></span>
     <span class="sembrado" id="sembrado" hidden></span>
     <span class="franja-der">
+      <button class="peligro" id="exportar">Exportar el libro</button>
+      <button class="peligro" id="importar">Fundir un libro</button>
+      <input type="file" id="archivoLibro" accept="application/json,.json" hidden>
       <button class="peligro" id="reiniciar">Volver a las observaciones de ejemplo</button>
     </span>
   </div>
@@ -612,6 +633,19 @@
     </div>
   </section>
 </main>
+
+<div class="velo" id="veloLibro" hidden>
+  <div class="contraste-caja fundido">
+    <h3 id="fundidoTitulo">Libro fundido</h3>
+    <p class="de" id="fundidoDe"></p>
+    <div id="fundidoCuenta"></div>
+    <div id="fundidoPugnas"></div>
+    <p class="nota-sello" id="fundidoSello"></p>
+    <div class="contraste-pies">
+      <button id="fundidoCerrar">Entendido</button>
+    </div>
+  </div>
+</div>
 
 <div class="velo" id="velo" hidden>
   <div class="contraste-caja">
@@ -990,7 +1024,7 @@ function abrirContraste(contraste) {
   $("contrasteCuerpo").innerHTML = contraste.map((c) => `
     <div class="roce ${c.discrepa ? "discrepa" : ""}">
       <div class="roce-cab"><b>${esc(c.modalidad)}</b>${c.discrepa ? "" : `<span class="sellado">coincide</span>`}<span class="mio">tú dices <b>${c.mia}</b></span></div>
-      ${c.otros.map((o) => `<div class="otro">${esc(o.nombre)}${o.verificado ? "" : " (firma sin verificar)"} dijo <span class="n">${o.cantidad}</span> &middot; ${new Date(o.fecha).toLocaleDateString("es-PA", { day: "numeric", month: "long" })} &middot; ${esc(o.obs)}${o.texto ? `<span class="cita">«${esc(o.texto)}»</span>` : ""}</div>`).join("")}
+      ${c.otros.map((o) => `<div class="otro">${esc(o.nombre)}${o.verificado ? "" : " (firma sin verificar)"} dijo <span class="n">${o.cantidad}</span> &middot; ${cuandoCorto(o.fecha)} &middot; ${esc(o.obs)}${o.texto ? `<span class="cita">«${esc(o.texto)}»</span>` : ""}</div>`).join("")}
     </div>`).join("");
   ultimoContraste = contraste;
   $("velo").hidden = false;
@@ -1004,6 +1038,12 @@ $("contrasteSeguir").onclick = async () => {
 };
 
 // ---------- quién eres ----------
+// «09/10/2026» no dice si es el 9 de octubre o el 10 de septiembre, y aqui las fechas son
+// prueba de algo. Se escribe el mes con letras y se acabo la duda.
+// El «p. m.» ya trae su punto final; si la frase le pone otro salen dos seguidos.
+const cuando = (iso) => new Date(iso).toLocaleString("es-PA", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).replace(/\.$/, "");
+const cuandoCorto = (iso) => new Date(iso).toLocaleDateString("es-PA", { day: "numeric", month: "long" });
+
 const iniciales = (n) => String(n ?? "").trim().split(/\s+/).slice(0, 2).map((p) => p[0] ?? "").join("").toUpperCase() || "?";
 let elegido = null;
 
@@ -1078,6 +1118,68 @@ $("darAlta").onclick = () => entrar("/registrar", { nombre: $("altaNombre").valu
 $("altaPin").onkeydown = (e) => { if (e.key === "Enter") $("darAlta").click(); };
 $("salir").onclick = async () => { await post("/salir", "{}").catch(() => {}); olvidar(); abrirEntrada(); };
 
+// ---------- el libro va y viene ----------
+// Tako corría DENTRO del dispositivo, que no es lo mismo que ser descentralizado: lo que
+// veía Marta se quedaba en la tablet de Marta. El desacuerdo entre dos personas, que es lo
+// único que Tako hace y nadie más hace, solo aparecía si las dos observaciones nacían en
+// el mismo equipo. Aquí el libro se exporta a un archivo que viaja como quiera, y el otro
+// equipo lo funde con el suyo. Sin servidor en medio y sin nube.
+$("exportar").onclick = async () => {
+  try {
+    const r = await fetch("/libro", { headers: sesion ? { "x-tako-sesion": sesion } : {} });
+    if (!r.ok) throw new Error("no se pudo exportar");
+    const texto = await r.text();
+    const url = URL.createObjectURL(new Blob([texto], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tako-libro-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const n = JSON.parse(texto).observaciones.length;
+    $("guardado").textContent = `Libro exportado: ${n} ${n === 1 ? "observación" : "observaciones"}, con su sello. Ese archivo se lo puedes pasar a otro equipo.`;
+  } catch (e) { $("guardado").textContent = "Error: " + e.message; }
+};
+
+$("importar").onclick = () => {
+  if (!sesion) { $("guardado").textContent = "Entra con tu PIN antes de fundir un libro."; return abrirEntrada(); }
+  $("archivoLibro").value = "";
+  $("archivoLibro").click();
+};
+
+$("archivoLibro").onchange = async (e) => {
+  const f = e.target.files?.[0];
+  if (!f) return;
+  try {
+    const r = await post("/fundir", await f.text());
+    mostrarFundido(r);
+    await cargarBase();
+    await cargarPadron();
+  } catch (err) {
+    $("guardado").textContent = err instanceof SinSesion ? err.message : "No se fundió: " + err.message;
+  }
+};
+
+function mostrarFundido(r) {
+  const cuantas = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+  $("fundidoTitulo").textContent = r.pugnas.length ? "Fundido, y aparecieron desacuerdos" : "Libro fundido";
+  $("fundidoDe").innerHTML = `Viene de <b>${esc(r.de)}</b>${r.exportadoEl ? `, exportado el ${cuando(r.exportadoEl)}` : ""}.`;
+  $("fundidoCuenta").innerHTML = `
+    <div class="linea"><b>${r.nuevas}</b><span>${r.nuevas === 1 ? "observación nueva entró al libro" : "observaciones nuevas entraron al libro"}</span></div>
+    <div class="linea"><b>${r.repetidas}</b><span>ya las tenías<small>La misma observación no entra dos veces: se reconoce por su contenido, no por el número que le tocó en el otro equipo.</small></span></div>
+    <div class="linea"><b>${r.total}</b><span>en total ahora</span></div>`;
+  $("fundidoPugnas").innerHTML = r.pugnas.length ? `
+    <div class="abierta-nueva">
+      <h4>${cuantas(r.pugnas.length, "desacuerdo que no existía", "desacuerdos que no existían")}</h4>
+      ${r.pugnas.map((p) => `<div class="p">${esc(p.cliente)} &middot; <b>${esc(p.modalidad)}</b>: ${p.quienes.map((q) => `${esc(q.nombre)} dice <b>${q.cantidad}</b>`).join(" y ")}</div>`).join("")}
+      <div class="p" style="margin-top:7px">Nadie elige por ellos. Quedan los dos números, con nombre y fecha, hasta que alguien vaya a contar.</div>
+    </div>` : "";
+  $("fundidoSello").textContent = r.selloAusente
+    ? "Ese libro venía sin sello, así que no se pudo comprobar que llegara entero. Se fundió igual, pero conviene saberlo."
+    : "El sello cuadra: el archivo llegó entero. Comprueba que no se cortó ni se editó por el camino, no quién lo escribió.";
+  $("veloLibro").hidden = false;
+}
+$("fundidoCerrar").onclick = () => { $("veloLibro").hidden = true; };
+
 // ---------- el panel ----------
 // Los números salen de las observaciones guardadas, no de un contador aparte: cualquiera
 // de ellos se puede seguir hasta una observación con id, o no debería estar aquí.
@@ -1102,10 +1204,10 @@ $("reiniciar").onclick = async () => { if (confirm("¿Borrar lo capturado y volv
 async function cargarBase() {
   const b = await fetch("/base").then((r) => r.json());
   // Las sembradas se dicen: quien entra por primera vez no puede distinguirlas de las que
-  // salieron de una visita real, y el desacuerdo entre ellas es justo lo que enseña.
+  // salieron de una visita real.
   const sem = document.getElementById("sembrado");
   if (b.ejemplos && b.ejemplos.length) {
-    sem.textContent = `${b.ejemplos.join(" y ")} vienen de ejemplo con el laboratorio: son las dos que no coinciden entre sí. Las tuyas se guardan debajo.`;
+    sem.textContent = `${b.ejemplos.join(" y ")} ${b.ejemplos.length > 1 ? "vienen" : "viene"} de ejemplo con el laboratorio: es lo que vio la gente de ESTE equipo. Lo que vieron los demás llega fundiendo su libro.`;
     sem.hidden = false;
   } else {
     sem.hidden = true;
@@ -1124,7 +1226,7 @@ async function cargarBase() {
         <td>${esc(m.marca)}</td><td>${esc(m.edad)}</td>
         <td><span class="chip ${m.confianza}">${m.confianza}</span><span class="porque">${esc(m.porque)}</span></td></tr>
       ${abre ? `<tr><td colspan="5"><div class="rastro"><b style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sello)">Rastro · ${m.reportes.length} reporte${m.reportes.length > 1 ? "s" : ""}</b>
-        ${m.reportes.map((r) => `<div class="r"><b>${esc(r.id)}</b> · ${esc(r.observador.nombre)}${r.observador.verificado ? "" : " (sin verificar)"} · ${new Date(r.fecha).toLocaleString("es-PA")} · ${esc(r.fuente)} → <b>${r.cantidad}</b>${r.aproximada ? " aprox." : ""}${r.marcas.length ? " · " + esc(r.marcas.join(", ")) : ""}${r.edades.length ? " · " + esc(r.edades.join(", ")) : ""}<br><i>«${esc(r.texto)}»</i></div>`).join("")}
+        ${m.reportes.map((r) => `<div class="r"><b>${esc(r.id)}</b> · ${esc(r.observador.nombre)}${r.observador.verificado ? "" : " (sin verificar)"} · ${cuando(r.fecha)} · ${esc(r.fuente)} → <b>${r.cantidad}</b>${r.aproximada ? " aprox." : ""}${r.marcas.length ? " · " + esc(r.marcas.join(", ")) : ""}${r.edades.length ? " · " + esc(r.edades.join(", ")) : ""}<br><i>«${esc(r.texto)}»</i></div>`).join("")}
         ${m.conflicto ? `<div class="r" style="color:var(--ambar)"><b style="color:var(--ambar)">Conflicto:</b> las observaciones no coinciden en la cantidad. Se guardan todas; la próxima visita pregunta: ¿son ${m.cantidades.join(" o ")}?</div>` : ""}
       </div></td></tr>` : ""}`;
     }).join("")}

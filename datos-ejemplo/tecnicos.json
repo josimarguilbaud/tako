@@ -1,29 +1,32 @@
 [
   {
     "id": "T-01",
+    "uid": "a1f0c3d5e7b90211",
     "nombre": "Marta Gómez",
     "zona": "Panamá y Chiriquí",
     "origen": "padrón",
     "alta": "2026-09-01T08:00:00.000Z",
-    "sal": "5d964bc8165d5424bf7e17ea1594d402",
-    "pinHash": "0ecf06125e8171fee2f03a2c54e8af39ac0b1e656b7b05201632841b225b75da"
+    "sal": "12e1db9a3ff0c5ba1897509e25e02469",
+    "pinHash": "c421d65079adcc023427d48ad7d77a700045b01d8ca38e9d0decbd12ba5ad411"
   },
   {
     "id": "T-02",
+    "uid": "b2e1d4c6f8a01322",
     "nombre": "Luis Ortega",
     "zona": "Panamá Oeste y Colón",
     "origen": "padrón",
     "alta": "2026-09-01T08:00:00.000Z",
-    "sal": "5fb3d702ef36525b5036982bbb5b53b1",
-    "pinHash": "21de226ee04ab911ead00027217a9295b7f7ff5f1e047574919659f19ffe6cee"
+    "sal": "eb423e0334791acf89042b29a28554af",
+    "pinHash": "508f3ea090be83c111df4240dbe5b576d225c21929e32490f471ee8e2d01f226"
   },
   {
     "id": "T-03",
+    "uid": "c3d2e5b7a9f12433",
     "nombre": "Ana Ruiz",
     "zona": "Azuero y Veraguas",
     "origen": "padrón",
     "alta": "2026-09-01T08:00:00.000Z",
-    "sal": "f468e940f2efa6c0682a251149364efd",
-    "pinHash": "e37ac378f6a5e721c7e2cff7f79fb242672de65ac5376945b1891947a0e9fa62"
+    "sal": "3f6736b5df8a41de6eb4a37fc51d1a99",
+    "pinHash": "4eee23a0030ccde05e10d7673ed8db6547d47c098ae427e35a4429a2b9fab6c5"
   }
 ]

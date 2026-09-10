@@ -4,6 +4,7 @@
     "fecha": "2026-09-08T14:20:11.000Z",
     "observador": {
       "id": "T-01",
+      "uid": "a1f0c3d5e7b90211",
       "nombre": "Marta Gómez",
       "verificado": true
     },
@@ -44,45 +45,7 @@
       ],
       "clienteConfirmado": true,
       "clienteDicho": "Hospital DemoCare Pacific"
-    }
-  },
-  {
-    "id": "OBS-002",
-    "fecha": "2026-09-09T09:05:44.000Z",
-    "observador": {
-      "id": "T-02",
-      "nombre": "Luis Ortega",
-      "verificado": true
     },
-    "fuente": "voz",
-    "texto": "Estuve en Hospital DemoCare Pacific. Creo que tienen tres resonadores y un tomografo.",
-    "json": {
-      "cliente": "Hospital DemoCare Pacific",
-      "ciudad": "Panama City",
-      "pais": "Panama",
-      "equipos": [
-        {
-          "modalidad": "MR",
-          "cantidad": 3,
-          "cantidadAproximada": false,
-          "marca": "Unknown",
-          "modelo": "Unknown",
-          "edadAnios": 0,
-          "edadCualitativa": ""
-        },
-        {
-          "modalidad": "CT",
-          "cantidad": 1,
-          "cantidadAproximada": false,
-          "marca": "Unknown",
-          "modelo": "Unknown",
-          "edadAnios": 0,
-          "edadCualitativa": ""
-        }
-      ],
-      "clienteConfirmado": true,
-      "clienteDicho": "Hospital DemoCare Pacific",
-      "lugarDeLista": true
-    }
+    "uid": "1dfbc1d2c645c49e"
   }
 ]

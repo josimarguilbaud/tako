@@ -61,7 +61,11 @@ export function registrar(padron, { nombre, zona, pin, origen = "alta local", ho
   const id = `T-${String(Math.max(0, ...padron.map((t) => numeroDeId(t.id))) + 1).padStart(2, "0")}`;
   return {
     tecnico: {
-      id, nombre: n,
+      // El id T-NN se numera dentro de ESTE equipo, así que el T-04 de una tablet y el
+      // T-04 de otra pueden ser dos personas distintas. Cuando dos libros se funden eso
+      // mezclaría a dos desconocidos en una sola fila, así que la identidad de verdad es
+      // el uid, que nace aquí y no se repite en ninguna parte.
+      id, uid: randomBytes(8).toString("hex"), nombre: n,
       zona: String(zona ?? "").trim() || "Sin zona",
       origen, alta: hoy.toISOString(),
       sal, pinHash: hashDePin(sal, String(pin)),
@@ -76,10 +80,15 @@ export function registrar(padron, { nombre, zona, pin, origen = "alta local", ho
 export function observadorDe(o) {
   const v = o?.observador;
   if (v && typeof v === "object") {
-    return { id: String(v.id ?? "?"), nombre: String(v.nombre ?? "Sin nombre"), verificado: v.verificado !== false };
+    const id = String(v.id ?? "?");
+    // `clave` es con lo que se agrupa; `id` es lo que se enseña. Se separan porque el
+    // T-04 de una tablet no tiene por qué ser el T-04 de otra, y al fundir libros hay
+    // que poder distinguirlos sin cambiarle a nadie la etiqueta que ya conoce.
+    return { id, uid: v.uid ?? null, clave: String(v.uid ?? id), nombre: String(v.nombre ?? "Sin nombre"), verificado: v.verificado !== false };
   }
   const nombre = String(v ?? "").trim() || "Sin nombre";
-  return { id: `libre:${plano(nombre)}`, nombre, verificado: false };
+  const id = `libre:${plano(nombre)}`;
+  return { id, uid: null, clave: id, nombre, verificado: false };
 }
 
 // ---------- lo que el técnico recibe a cambio ----------
@@ -91,7 +100,7 @@ export function observadorDe(o) {
 export function contrastar(observaciones, borrador, yoId) {
   const cliente = borrador?.cliente;
   if (!cliente) return [];
-  const previas = (observaciones ?? []).filter((o) => o?.json?.cliente === cliente && observadorDe(o).id !== yoId);
+  const previas = (observaciones ?? []).filter((o) => o?.json?.cliente === cliente && observadorDe(o).clave !== yoId);
   const salida = [];
   for (const [modalidad, mia] of Object.entries(cantidadesPorModalidad(borrador))) {
     // De cada persona, solo su último reporte de esa modalidad: lo que dijo hace un año
@@ -101,8 +110,8 @@ export function contrastar(observaciones, borrador, yoId) {
       const n = cantidadesPorModalidad(o.json)[modalidad];
       if (n === undefined) continue;
       const quien = observadorDe(o);
-      if (!ultimo[quien.id] || o.fecha > ultimo[quien.id].fecha) {
-        ultimo[quien.id] = { ...quien, cantidad: n, fecha: o.fecha, texto: o.texto, obs: o.id };
+      if (!ultimo[quien.clave] || o.fecha > ultimo[quien.clave].fecha) {
+        ultimo[quien.clave] = { ...quien, cantidad: n, fecha: o.fecha, texto: o.texto, obs: o.id };
       }
     }
     const otros = Object.values(ultimo).sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
@@ -118,14 +127,14 @@ export function contrastar(observaciones, borrador, yoId) {
 export function coberturaDe(observaciones, padron = []) {
   const filas = new Map();
   const anota = (quien, base = {}) => {
-    if (!filas.has(quien.id)) {
-      filas.set(quien.id, { ...quien, ...base, observaciones: 0, hospitales: [], fuentes: {}, ultima: null, conflictos: [] });
+    if (!filas.has(quien.clave)) {
+      filas.set(quien.clave, { ...quien, ...base, observaciones: 0, hospitales: [], fuentes: {}, ultima: null, conflictos: [] });
     }
-    return filas.get(quien.id);
+    return filas.get(quien.clave);
   };
   // El padrón entra completo, aunque alguien no haya levantado nada todavía: un técnico
   // con cero observaciones es justo el dato que un gerente de cuentas quiere ver.
-  for (const t of padron) anota({ id: t.id, nombre: t.nombre, verificado: true }, { zona: t.zona, origen: t.origen, alta: t.alta });
+  for (const t of padron) anota({ id: t.id, uid: t.uid ?? null, clave: String(t.uid ?? t.id), nombre: t.nombre, verificado: true }, { zona: t.zona, origen: t.origen, alta: t.alta });
   for (const o of observaciones ?? []) {
     const f = anota(observadorDe(o));
     f.observaciones++;
@@ -138,7 +147,7 @@ export function coberturaDe(observaciones, padron = []) {
   // apunta a las dos, porque cualquiera de las dos puede ir a resolverlo.
   for (const c of conflictosDe(observaciones ?? [])) {
     for (const r of c.reportes) {
-      filas.get(r.id)?.conflictos.push({ cliente: c.cliente, modalidad: c.modalidad, cantidades: c.cantidades });
+      filas.get(r.clave)?.conflictos.push({ cliente: c.cliente, modalidad: c.modalidad, cantidades: c.cantidades });
     }
   }
   return [...filas.values()].sort((a, b) => b.observaciones - a.observaciones || a.nombre.localeCompare(b.nombre));
@@ -155,7 +164,7 @@ export function conflictosDe(observaciones) {
       const clave = `${o.json.cliente}|${modalidad}`;
       if (!grupos.has(clave)) grupos.set(clave, { cliente: o.json.cliente, modalidad, ultimo: {} });
       const g = grupos.get(clave);
-      if (!g.ultimo[quien.id] || o.fecha > g.ultimo[quien.id].fecha) g.ultimo[quien.id] = { ...quien, cantidad: n, fecha: o.fecha };
+      if (!g.ultimo[quien.clave] || o.fecha > g.ultimo[quien.clave].fecha) g.ultimo[quien.clave] = { ...quien, cantidad: n, fecha: o.fecha };
     }
   }
   const salida = [];
