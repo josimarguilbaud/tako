@@ -106,6 +106,8 @@
 
   details{margin-top:14px;font-size:13px}
   summary{cursor:pointer;color:var(--suave);font-size:12.5px}
+  .sembrado{margin:0 0 14px;padding:9px 12px;border-radius:3px;font-size:13px;
+            background:var(--papel);border:1px dashed var(--linea);color:var(--media)}
   pre{background:var(--papel);border:1px solid var(--linea-f);padding:12px;border-radius:3px;overflow:auto;font:12px/1.6 var(--dato)}
   .vacio{color:var(--suave)}
   .cliente-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -179,6 +181,7 @@
   <section>
     <div class="tarjeta">
       <h2>Cliente 360</h2>
+      <p class="sembrado" id="sembrado" hidden></p>
       <div id="base"><p class="vacio">Todavía no hay observaciones guardadas.</p></div>
       <div class="fila" style="justify-content:flex-end;margin-top:18px">
         <button class="peligro" id="reiniciar">Volver a las observaciones de ejemplo</button>
@@ -435,6 +438,15 @@ $("reiniciar").onclick = async () => { if (confirm("¿Borrar lo capturado y volv
 
 async function cargarBase() {
   const b = await fetch("/base").then((r) => r.json());
+  // Las sembradas se dicen: quien entra por primera vez no puede distinguirlas de las que
+  // salieron de una visita real, y el desacuerdo entre ellas es justo lo que enseña.
+  const sem = document.getElementById("sembrado");
+  if (b.ejemplos && b.ejemplos.length) {
+    sem.textContent = `${b.ejemplos.join(" y ")} vienen de ejemplo con el laboratorio: son las dos que no coinciden entre sí. Las tuyas se guardan debajo.`;
+    sem.hidden = false;
+  } else {
+    sem.hidden = true;
+  }
   $("modelo").textContent = `${b.modelo} · todo en el dispositivo`;
   if (!b.resumen.length) { $("base").innerHTML = `<p class="vacio">Todavía no hay observaciones guardadas.</p>`; return; }
   $("base").innerHTML = b.resumen.map((c) => `

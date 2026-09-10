@@ -40,6 +40,12 @@ function leer() {
 }
 const escribir = (obs) => writeFileSync(ARCHIVO, JSON.stringify(obs, null, 2));
 
+// Cuales de las guardadas vinieron sembradas. Se sabe por su id, que es el del archivo
+// de ejemplo: asi sigue funcionando aunque encima ya haya observaciones de verdad.
+const IDS_SEMBRADOS = new Set(
+  existsSync(EJEMPLO) ? JSON.parse(readFileSync(EJEMPLO, "utf-8")).map((o) => o.id) : []
+);
+
 console.log("cargando modelos…");
 const t0 = Date.now();
 const whisper = await loadModel({ modelSrc: VOZ_BASE ? WHISPER_BASE_Q8_0 : WHISPER_SMALL_Q8_0, modelConfig: { detect_language: true } });
@@ -149,7 +155,8 @@ const servidor = http.createServer(async (req, res) => {
     }
     if (req.method === "GET" && url.pathname === "/base") {
       const obs = leer();
-      return json(res, 200, { modelo: NOMBRE_MODELO, total: obs.length, resumen: resumen(obs) });
+      const ejemplos = obs.filter((o) => IDS_SEMBRADOS.has(o.id)).map((o) => o.id);
+      return json(res, 200, { modelo: NOMBRE_MODELO, total: obs.length, ejemplos, resumen: resumen(obs) });
     }
     if (req.method === "POST" && url.pathname === "/transcribir") {
       const audio = await cuerpo(req);
