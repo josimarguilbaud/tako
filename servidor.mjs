@@ -1,4 +1,4 @@
-// Laboratorio de Consta. Junta en un solo proceso las piezas probadas por separado:
+// Laboratorio de Tako. Junta en un solo proceso las piezas probadas por separado:
 // voz -> texto (Whisper), texto -> JSON (Qwen3 con esquema), verificacion contra la
 // frase, repregunta en codigo, guardado con procedencia, y el Cliente 360 que conserva
 // los conflictos en vez de elegir un numero. Sin dependencias fuera de Node y QVAC.

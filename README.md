@@ -1,8 +1,8 @@
-# Consta
+# Tako
 
-**Que conste quién lo vio.**
+**Quién lo vio, y cuándo.**
 
-Un colaborador sale de un hospital y cuenta lo que vio. Consta lo convierte en datos
+Un colaborador sale de un hospital y cuenta lo que vio. Tako lo convierte en datos
 estructurados de la base instalada —cuántos equipos, de qué marca, de qué año— y guarda
 **quién lo observó, cuándo y cuántas personas lo confirmaron por separado**. Todo corre en
 el dispositivo. Nada sale de la máquina.
@@ -149,7 +149,7 @@ el parseo no se le delegue al modelo.
 ## La idea: el modelo propone, el código comprueba
 
 Los modelos que caben en un teléfono son buenos leyendo y nombrando, y malos contando,
-repartiendo y atribuyendo. Consta no les pide que se porten bien: les quita el trabajo que
+repartiendo y atribuyendo. Tako no les pide que se porten bien: les quita el trabajo que
 hacen mal.
 
 `verificar.mjs` lee la propia frase y **impone** lo que dice:

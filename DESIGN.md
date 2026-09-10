@@ -1,6 +1,6 @@
 ---
 # gstack: design-md-format=spec
-name: Consta
+name: Tako
 description: Acta de campo. Papel de acero, tinta fría y una sola marca de color, la que dice que un dato fue corregido.
 colors:
   primary: "#075A63"
@@ -89,7 +89,7 @@ components:
     rounded: "{rounded.sm}"
 ---
 
-# Consta
+# Tako
 
 ## Overview
 

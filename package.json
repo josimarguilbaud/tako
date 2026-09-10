@@ -1,8 +1,8 @@
 {
-  "name": "consta-lab",
+  "name": "tako",
   "private": true,
   "version": "0.1.0",
-  "description": "Laboratorio local de Consta: voz -> texto -> extraccion -> verificacion -> Cliente 360, todo en el dispositivo con QVAC.",
+  "description": "Tako: lo que un representante ve en un hospital se vuelve dato, y cada dato sabe quien lo vio. Todo en el dispositivo con QVAC.",
   "type": "module",
   "scripts": {
     "start": "node servidor.mjs",

@@ -1,9 +1,9 @@
-# Prompt para generar la interfaz de Consta
+# Prompt para generar la interfaz de Tako
 
 Copia todo lo que hay debajo de la línea y pégalo en la herramienta.
 Cuando te devuelva el HTML, pásamelo y yo lo cableo al motor.
 
-**Ojo con una cosa antes de empezar:** el JavaScript de Consta ya está escrito y
+**Ojo con una cosa antes de empezar:** el JavaScript de Tako ya está escrito y
 funciona. Escribe HTML dentro de unos contenedores concretos usando unas clases
 concretas. Por eso el prompt le exige unos `id` exactos y le pide estilar clases que no
 va a ver en el HTML estático. Si eso no se respeta, hay que recablear la aplicación
@@ -11,7 +11,7 @@ entera y no compensa.
 
 ---
 
-Necesito un **único archivo HTML autocontenido** para una aplicación llamada **Consta**.
+Necesito un **único archivo HTML autocontenido** para una aplicación llamada **Tako**.
 
 ## Qué es
 
@@ -26,7 +26,7 @@ número**. Cada dato lleva encima su procedencia. Cuando dos personas reportan c
 distintas, no se elige una: se enseñan las dos. Y cuando el código corrige al modelo,
 lo dice en pantalla en vez de esconderlo.
 
-El lema es: **Que conste quién lo vio.**
+El lema es: **Quién lo vio, y cuándo.**
 
 ## Restricciones técnicas, no negociables
 
@@ -159,7 +159,7 @@ mismo orden.
 
 ### Encabezado
 
-**Consta** grande, al lado «Que conste quién lo vio» en texto secundario, y a la derecha
+**Tako** grande, al lado «Quién lo vio, y cuándo» en texto secundario, y a la derecha
 en monoespaciada pequeña color acento:
 `Whisper small + Qwen3 1.7B · todo en el dispositivo`.
 

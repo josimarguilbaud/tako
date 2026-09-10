@@ -1,4 +1,4 @@
-# Consta
+# Tako
 
 Captura de base instalada hospitalaria, entera en el dispositivo. Ver `README.md` para
 qué es, cómo correrlo y los números medidos.
