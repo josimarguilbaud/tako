@@ -4,195 +4,510 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Consta</title>
+<link rel="stylesheet" href="/tipografias/tipografias.css">
 <style>
-  /* Sistema de diseño: ver DESIGN.md. Acta de campo, no panel de control.
-     Las tipografías salen del repo, no de un CDN: sin conexión no hay CDN. */
-  @import url("/tipografias/tipografias.css");
+  /* Escrito a mano: sin Tailwind, sin CDN, sin iconos remotos. La app se graba en modo
+     avión y tiene que verse igual con el cable desenchufado. */
+  :root {
+    --fondo: #F4F7FA;
+    --hoja: #FFFFFF;
+    --tinta: #1E293B;
+    --media: #475569;
+    --suave: #94A3B8;
+    --linea: #E2E8F0;
+    --linea-f: #F1F5F9;
 
-  :root{
-    --papel:#F1F4F4; --hoja:#FFFFFF; --tinta:#14181A; --media:#5E696D; --suave:#8A9498;
-    --linea:#D3DADC; --linea-f:#E4E9EA; --metal:#E7ECED;
-    --sello:#075A63; --sello-tenue:#E2EEEF; --sello-borde:#075A63;
-    --ambar:#8A5A00; --ambar-tenue:#FAF0DC; --ambar-borde:#8A5A00;
-    --rojo:#8D3030; --rojo-tenue:#F9EBEA;
-    --display:"Archivo","Arial Narrow",sans-serif;
-    --texto:"Public Sans","Segoe UI",system-ui,sans-serif;
-    --dato:"JetBrains Mono",Consolas,monospace;
+    --noche: #0F172A;
+    --noche-2: #1E293B;
+    --consola: #0A0F1C;
+
+    --sello: #4F46E5;
+    --sello-tenue: #EEF2FF;
+    --violeta: #8B5CF6;
+
+    --alta: #10B981;      --alta-f: #ECFDF5;
+    --media-c: #F59E0B;   --media-f: #FFFBEB;
+    --baja: #64748B;      --baja-f: #F1F5F9;
+    --conflicto: #EF4444; --conflicto-f: #FEF2F2;
+    --ambar: #B45309;
+
+    --sombra: 0 1px 2px rgba(15,23,42,.05), 0 6px 18px -10px rgba(15,23,42,.18);
+    --display: "Archivo", "Segoe UI", system-ui, sans-serif;
+    --texto: "Public Sans", "Segoe UI", system-ui, sans-serif;
+    --dato: "JetBrains Mono", Consolas, monospace;
+    --r-s: 5px; --r-m: 9px; --r-l: 13px;
   }
-  /* El sótano. Rediseñado, no invertido: el ámbar sube para seguir siendo el que grita. */
-  @media (prefers-color-scheme:dark){:root:not([data-tema="claro"]){
-    --papel:#0F1315; --hoja:#171D1F; --tinta:#E6ECED; --media:#96A2A6; --suave:#6C787C;
-    --linea:#2A3437; --linea-f:#202829; --metal:#232B2D;
-    --sello:#4FC3CE; --sello-tenue:#103336; --sello-borde:#2E6E74;
-    --ambar:#D9A64E; --ambar-tenue:#2C2415; --ambar-borde:#5A4520;
-    --rojo:#E08A82; --rojo-tenue:#2E1A19;
-  }}
 
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--papel);color:var(--tinta);font:16px/1.55 var(--texto);-webkit-font-smoothing:antialiased}
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #0B1220; --hoja: #131C2E; --tinta: #E8EDF5; --media: #9AA8BF;
+      --suave: #64748B; --linea: #24304A; --linea-f: #1A2437;
+      --sello: #818CF8; --sello-tenue: #1E1B4B;
+      --alta-f: #08281E; --media-f: #2A1F0C; --baja-f: #1A2437; --conflicto-f: #2C1417;
+      --sombra: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px -12px rgba(0,0,0,.7);
+    }
+  }
 
-  header{display:flex;align-items:baseline;gap:14px;padding:16px 24px;border-bottom:1px solid var(--linea);background:var(--hoja);flex-wrap:wrap}
-  header h1{font:700 26px var(--display);margin:0;letter-spacing:-.022em}
-  header .lema{color:var(--media);font-size:14px}
-  header .modelo{margin-left:auto;font-family:var(--dato);font-size:11px;letter-spacing:.04em;color:var(--sello)}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Una columna hasta 900; luego captura a la izquierda y expediente a la derecha. */
-  main{display:grid;grid-template-columns:minmax(340px,1fr) minmax(420px,1.25fr);gap:24px;padding:24px;max-width:1200px;margin:0 auto}
-  @media (max-width:900px){main{grid-template-columns:1fr;padding:16px;gap:16px}}
+  body {
+    background-color: var(--fondo);
+    background-image: radial-gradient(rgba(148,163,184,.35) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--tinta);
+    font: 15px/1.55 var(--texto);
+    -webkit-font-smoothing: antialiased;
+  }
 
-  /* No es una tarjeta: es una hoja del acta. Sin sombra, radio casi plano. */
-  .tarjeta{background:var(--hoja);border:1px solid var(--linea);border-radius:4px;padding:20px;margin-bottom:16px}
-  h2{font:700 22px var(--display);margin:0 0 4px;letter-spacing:-.01em}
-  h3{font:600 15px var(--texto);margin:20px 0 6px;letter-spacing:.01em}
-  label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--suave);font-weight:600;margin:16px 0 5px}
+  :focus-visible { outline: 2px solid var(--sello); outline-offset: 2px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -.015em; }
+  .oculto, [hidden] { display: none !important; }
 
-  input[type=text],textarea,select{width:100%;font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--linea);border-radius:3px;background:var(--hoja);color:var(--tinta)}
-  input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--sello);outline-offset:1px;border-color:var(--sello)}
-  textarea{min-height:96px;resize:vertical;line-height:1.5}
-  select{max-width:320px}
+  /* ---------------------------------------------------------------- barra */
 
-  .fila{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
-  button{font:600 15px var(--texto);padding:11px 16px;border-radius:3px;border:1px solid var(--sello);background:var(--sello);color:var(--hoja);cursor:pointer}
-  button.sec{background:transparent;color:var(--sello)}
-  button.peligro{background:transparent;color:var(--rojo);border-color:var(--rojo);font-weight:500;font-size:13px;padding:7px 11px}
-  button:disabled{opacity:.4;cursor:default}
-  button:focus-visible{outline:2px solid var(--sello);outline-offset:2px}
-  button.grabando{background:var(--rojo);border-color:var(--rojo);animation:pulso 1s infinite}
-  @keyframes pulso{50%{opacity:.6}}
-  @media (max-width:560px){.fila button{flex:1 1 auto}}
+  header {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in srgb, var(--hoja) 92%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--linea);
+  }
+  .barra {
+    max-width: 1500px; margin: 0 auto; padding: 10px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  }
+  .signo {
+    width: 30px; height: 30px; border-radius: 8px; flex: none;
+    background: linear-gradient(135deg, var(--noche), var(--sello));
+    display: flex; align-items: center; justify-content: center;
+  }
+  .signo svg { width: 17px; height: 17px; stroke: #fff; fill: none; stroke-width: 1.8; }
+  header h1 { font-size: 19px; }
+  header h1 b { color: var(--sello); font-weight: 800; }
+  .lema {
+    font-size: 13px; color: var(--suave);
+    border-left: 1px solid var(--linea); padding-left: 12px; margin-left: 4px;
+  }
+  @media (max-width: 780px) { .lema { display: none; } }
+  .barra-der { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
-  .estado{font-size:13.5px;color:var(--media);min-height:18px;margin-top:10px}
-  .oculto{display:none}
-  .nivel{flex:1;min-width:120px;height:8px;background:var(--linea);border-radius:4px;overflow:hidden}
-  .nivel i{display:block;height:100%;width:100%;background:var(--sello);transform-origin:left;transform:scaleX(0);transition:transform .08s linear}
+  .modelo {
+    font-family: var(--dato); font-size: 10px; color: var(--media);
+    background: var(--linea-f); border: 1px solid var(--linea);
+    padding: 5px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  .en-equipo {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11.5px; font-weight: 600; color: var(--alta);
+    background: var(--alta-f); border: 1px solid color-mix(in srgb, var(--alta) 35%, transparent);
+    padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+  }
+  .en-equipo i { width: 7px; height: 7px; border-radius: 50%; background: var(--alta); animation: latido 2s infinite; }
+  @keyframes latido { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
 
-  /* Filas regladas. La línea separa; la sombra no existe. */
-  table{border-collapse:collapse;width:100%;font-size:14.5px}
-  th{text-align:left;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--suave);font-weight:600;padding:0 8px 8px 0;border-bottom:1px solid var(--linea)}
-  td{padding:12px 8px 12px 0;border-bottom:1px solid var(--linea-f);vertical-align:top}
-  tr:last-child td{border-bottom:0}
-  tr.clic{cursor:pointer}
-  tr.clic:hover td{background:var(--metal)}
-  tr.abierta td{background:var(--metal)}
-  .mono,.num{font-family:var(--dato);font-variant-numeric:tabular-nums}
+  /* franja oscura de la demostración */
+  .franja { background: var(--noche-2); border-bottom: 1px solid var(--noche); }
+  .franja-dentro {
+    max-width: 1500px; margin: 0 auto; padding: 8px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+    font-family: var(--dato); font-size: 10.5px; color: #94A3B8;
+  }
+  .franja-dentro b { color: #A5B4FC; font-weight: 500; }
+  .franja-der { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .sembrado { color: #FCD34D; font-family: var(--texto); font-size: 12px; }
 
-  /* La marca de procedencia: la pieza central. Cuatro orígenes y solo cuatro. */
-  .marca{display:inline-flex;align-items:center;font-family:var(--dato);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;white-space:nowrap}
-  .marca.dicho{color:var(--suave);border:1px solid var(--linea)}
-  .marca.leido{color:var(--tinta);background:var(--metal);border:1px solid var(--linea)}
-  .marca.deducido{color:var(--ambar);background:var(--ambar-tenue);border:1px solid var(--ambar-borde)}
-  .marca.manual{color:var(--sello);background:var(--sello-tenue);border:1px solid var(--sello-borde)}
+  /* ---------------------------------------------------------------- rejilla */
 
-  .chip{display:inline-block;font-family:var(--dato);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:3px;border:1px solid;margin-right:6px}
-  .chip.Alta{color:var(--tinta);background:var(--metal);border-color:var(--linea)}
-  .chip.Media,.chip.Baja{color:var(--ambar);background:var(--ambar-tenue);border-color:var(--ambar-borde)}
-  .chip.Conflicto{color:var(--rojo);background:var(--rojo-tenue);border-color:var(--rojo)}
+  main {
+    max-width: 1500px; margin: 0 auto; padding: 18px 20px 72px;
+    display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start;
+  }
+  @media (min-width: 1100px) { main { grid-template-columns: minmax(360px, 4fr) minmax(560px, 8fr); } }
+  section { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 
-  /* Dos personas, dos números. La celda se dimensiona para dos desde el principio. */
-  .pugna{display:inline-block;font-family:var(--dato);font-size:15px;font-weight:700;color:var(--rojo);margin-left:6px}
-  .porque{font-size:12.5px;color:var(--suave);display:block;margin-top:3px}
+  .tarjeta {
+    background: var(--hoja); border: 1px solid var(--linea);
+    border-radius: var(--r-l); box-shadow: var(--sombra); overflow: hidden;
+  }
+  .tarjeta > h2 {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; padding: 13px 18px;
+    background: var(--linea-f); border-bottom: 1px solid var(--linea);
+  }
+  .tarjeta > h2 .ico {
+    width: 26px; height: 26px; border-radius: 7px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--sello-tenue); color: var(--sello);
+  }
+  .tarjeta > h2 .ico.oscuro { background: var(--noche); color: #fff; }
+  .tarjeta > h2 .ico svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; }
+  .tarjeta > h2 small { font-family: var(--texto); font-size: 11.5px; font-weight: 400; color: var(--suave); display: block; }
+  .cuerpo { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
 
-  .aviso{margin-top:14px;padding:11px 13px;border-radius:3px;font-size:14px;line-height:1.5}
-  .aviso.descartes{background:var(--ambar-tenue);border:1px solid var(--ambar-borde)}
-  .aviso.descartes b{color:var(--ambar)}
-  .aviso.pregunta{background:transparent;border:0;padding:14px 0 0;font:500 18px/1.3 var(--display);letter-spacing:-.008em}
-  .aviso.pregunta b{font-weight:500;color:var(--media);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-family:var(--texto);display:block;margin-bottom:5px}
+  label { display: block; font-family: var(--dato); font-size: 9.5px; font-weight: 700;
+          letter-spacing: .12em; text-transform: uppercase; color: var(--suave); margin-bottom: 6px; }
 
-  .rastro{margin:0 0 14px;padding:12px 14px;background:var(--papel);border:1px solid var(--linea);border-radius:3px;font-size:13.5px}
-  .rastro .r{padding:9px 0;border-bottom:1px solid var(--linea-f)}
-  .rastro .r:last-child{border-bottom:0}
-  .rastro .r b{font-family:var(--dato);font-weight:500;font-size:12px;color:var(--tinta)}
-  .rastro .r i{color:var(--media);font-style:normal}
+  input[type=text], select {
+    width: 100%; font: inherit; font-size: 14px;
+    padding: 9px 11px; border: 1px solid var(--linea); border-radius: var(--r-s);
+    background: var(--linea-f); color: var(--tinta);
+  }
 
-  details{margin-top:14px;font-size:13px}
-  summary{cursor:pointer;color:var(--suave);font-size:12.5px}
-  .sembrado{margin:0 0 14px;padding:9px 12px;border-radius:3px;font-size:13px;
-            background:var(--papel);border:1px dashed var(--linea);color:var(--media)}
-  pre{background:var(--papel);border:1px solid var(--linea-f);padding:12px;border-radius:3px;overflow:auto;font:12px/1.6 var(--dato)}
-  .vacio{color:var(--suave)}
-  .cliente-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-  .cliente-cab small{color:var(--suave);font-size:12.5px}
+  /* ---------------------------------------------------------------- consola */
 
-  /* El único momento de autor: la corrección se asienta una vez. */
-  @keyframes asentar{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
-  .corregido-nuevo{animation:asentar .25s ease-out}
-  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .consola { position: relative; }
+  textarea#texto {
+    width: 100%; min-height: 150px; resize: vertical;
+    background: var(--consola); color: #fff;
+    border: 1px solid var(--noche-2); border-radius: var(--r-m);
+    padding: 16px; font: 14px/1.65 var(--dato);
+    box-shadow: inset 0 3px 18px rgba(0,0,0,.45);
+  }
+  textarea#texto::placeholder { color: #64748B; font-style: italic; }
+
+  .rec {
+    position: absolute; top: 9px; right: 12px;
+    display: flex; align-items: center; gap: 7px;
+    opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .rec.viva { opacity: 1; }
+  .rec span { font-family: var(--dato); font-size: 9px; font-weight: 700;
+              letter-spacing: .16em; text-transform: uppercase; color: #F87171; }
+  .rec i { display: block; width: 3px; height: 14px; background: #EF4444; border-radius: 2px;
+           animation: onda 1s ease-in-out infinite; transform-origin: center; }
+  .rec i:nth-of-type(2) { animation-delay: .2s }
+  .rec i:nth-of-type(3) { animation-delay: .4s }
+  .rec i:nth-of-type(4) { animation-delay: .3s }
+  @keyframes onda { 0%,100% { transform: scaleY(.3) } 50% { transform: scaleY(1) } }
+  @media (prefers-reduced-motion: reduce) { .rec i, .en-equipo i { animation: none } }
+
+  /* ---------------------------------------------------------------- controles */
+
+  .fila { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .botones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  button {
+    font: 600 13.5px var(--texto); padding: 10px 14px;
+    border-radius: var(--r-s); border: 1px solid transparent; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    background: var(--sello); color: #fff; transition: all .16s ease;
+  }
+  button svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; flex: none; }
+  button:hover:not(:disabled) { filter: brightness(1.08); }
+  button:active { transform: translateY(1px); }
+  button:disabled { background: var(--linea-f); color: var(--suave); border-color: var(--linea); cursor: not-allowed; }
+  button.sec { background: var(--hoja); border-color: var(--linea); color: var(--tinta); }
+  button.sec:hover:not(:disabled) { border-color: var(--sello); color: var(--sello); }
+  button.peligro { background: var(--hoja); border-color: var(--linea); color: var(--media); font-size: 12px; padding: 7px 11px; }
+  button.peligro:hover { border-color: var(--conflicto); color: var(--conflicto); }
+
+  .estado { font-family: var(--dato); font-size: 10.5px; color: var(--suave); min-height: 15px; }
+
+  .nivel { flex: 1; min-width: 100px; height: 6px; background: var(--linea); border-radius: 4px; overflow: hidden; }
+  .nivel i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--sello), var(--violeta)); }
+
+  /* ---------------------------------------------------------------- tablas */
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    font-family: var(--dato); font-size: 9px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--suave);
+    text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--linea);
+  }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--linea-f); font-size: 13.5px; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: 0; }
+  .mono { font-family: var(--dato); font-variant-numeric: tabular-nums; }
+
+  .hospital { border: 1px solid var(--linea); border-radius: var(--r-m); overflow: hidden; }
+  .hospital + .hospital { margin-top: 16px; }
+  .cliente-cab {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 11px 14px; background: var(--linea-f); border-bottom: 1px solid var(--linea);
+  }
+  .cliente-cab h3 { font-size: 14.5px; }
+  .cliente-cab small { font-family: var(--dato); font-size: 10.5px; color: var(--suave); }
+
+  tr.clic { cursor: pointer; transition: background .15s; }
+  tr.clic:hover { background: var(--linea-f); }
+  tr.abierta { background: var(--sello-tenue); }
+
+  .chip {
+    display: inline-block; font-family: var(--dato); font-size: 9px; font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px; border: 1px solid;
+  }
+  .chip.Alta { background: var(--alta-f); color: var(--alta); border-color: var(--alta); }
+  .chip.Media { background: var(--media-f); color: var(--media-c); border-color: var(--media-c); }
+  .chip.Baja { background: var(--baja-f); color: var(--baja); border-color: var(--baja); }
+  .chip.Conflicto { background: var(--conflicto); color: #fff; border-color: var(--conflicto); }
+
+  .porque { display: block; font-size: 11px; color: var(--suave); margin-top: 3px; }
+  .pugna { color: var(--conflicto); font-weight: 700; margin-left: 5px; }
+
+  .rastro {
+    background: var(--fondo); border: 1px solid var(--linea);
+    border-radius: var(--r-s); padding: 12px 14px; font-size: 12.5px;
+  }
+  .rastro .r { padding: 7px 0; border-bottom: 1px solid var(--linea-f); color: var(--media); }
+  .rastro .r:last-child { border-bottom: 0; }
+
+  .marca {
+    display: inline-flex; font-family: var(--dato); font-size: 9px; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase; padding: 2px 6px;
+    border-radius: 3px; white-space: nowrap; margin-left: 5px;
+  }
+  .marca.dicho { background: var(--linea-f); border: 1px solid var(--linea); color: var(--media); }
+  .marca.leido { background: var(--sello-tenue); border: 1px solid var(--sello); color: var(--sello); }
+
+  .aviso { padding: 11px 14px; border-radius: var(--r-s); font-size: 13.5px; }
+  .aviso.descartes { background: var(--media-f); border: 1px solid var(--media-c); color: var(--ambar); }
+  .aviso.pregunta { background: var(--sello-tenue); border: 1px solid var(--sello); color: var(--sello); font-weight: 600; }
+  .vacio { color: var(--suave); font-style: italic; padding: 20px 0; text-align: center; }
+
+  details { border: 1px solid var(--linea); border-radius: var(--r-s); overflow: hidden; }
+  summary {
+    font-family: var(--dato); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--media); cursor: pointer; padding: 10px 14px; list-style: none;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  summary::-webkit-details-marker { display: none }
+  summary::after { content: "+"; font-size: 15px }
+  details[open] summary::after { content: "\2212" }
+  pre {
+    font: 11px/1.6 var(--dato); color: var(--media); background: var(--fondo);
+    padding: 14px; border-top: 1px solid var(--linea);
+    white-space: pre-wrap; word-break: break-word; overflow-x: auto; max-height: 320px;
+  }
+
+  /* ---------------------------------------------------------------- tubería */
+
+  .tuberia {
+    position: fixed; right: 20px; bottom: 20px; z-index: 60;
+    width: min(330px, calc(100vw - 40px)); pointer-events: none;
+    animation: asomar .22s ease-out;
+  }
+  @keyframes asomar { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+  @media (prefers-reduced-motion: reduce) { .tuberia { animation: none } }
+  .tuberia-caja {
+    background: var(--hoja); border: 1px solid var(--linea); border-radius: var(--r-m);
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 11px;
+    box-shadow: 0 18px 40px -16px rgba(15,23,42,.4);
+  }
+  .tuberia-caja h3 { font-size: 13px }
+  .tuberia-caja > p { font-size: 11.5px; color: var(--suave) }
+  .paso { display: flex; align-items: center; gap: 10px }
+  .paso-nodo {
+    width: 24px; height: 24px; border-radius: 50%; flex: none;
+    border: 2px solid var(--linea); color: var(--suave);
+    display: flex; align-items: center; justify-content: center; transition: all .3s ease;
+  }
+  .paso-nodo svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2 }
+  .paso.activo .paso-nodo { border-color: var(--sello); background: var(--sello); color: #fff }
+  .paso.listo .paso-nodo { border-color: var(--alta); background: var(--alta); color: #fff }
+  .paso-cuerpo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px }
+  .paso-fila { display: flex; justify-content: space-between; gap: 10px; font-family: var(--dato); font-size: 9.5px }
+  .paso-fila b { color: var(--tinta); font-weight: 700; letter-spacing: .06em; text-transform: uppercase }
+  .paso-fila span { color: var(--suave) }
+  .paso.listo .paso-fila span { color: var(--alta) }
+  .paso-barra { height: 3px; border-radius: 3px; background: var(--linea-f); overflow: hidden }
+  .paso-barra i { display: block; height: 100%; width: 100%; background: var(--sello);
+                  transform: scaleX(0); transform-origin: left; transition: transform .5s ease }
+  .paso.listo .paso-barra i { background: var(--alta) }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Consta</h1>
-  <span class="lema">Que conste quién lo vio</span>
-  <span class="modelo" id="modelo">cargando…</span>
+  <div class="barra">
+    <span class="signo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+    </span>
+    <h1>Consta</h1>
+    <span class="lema">Que conste quién lo vio</span>
+    <div class="barra-der">
+      <span class="modelo" id="modelo">cargando…</span>
+      <span class="en-equipo"><i></i>Todo en el dispositivo</span>
+    </div>
+  </div>
 </header>
+
+<div class="franja">
+  <div class="franja-dentro">
+    <span>Cadena: <b>Whisper small &rarr; Qwen3 1.7B &rarr; VisionPsy</b></span>
+    <span class="sembrado" id="sembrado" hidden></span>
+    <span class="franja-der">
+      <button class="peligro" id="reiniciar">Volver a las observaciones de ejemplo</button>
+    </span>
+  </div>
+</div>
 
 <main>
   <section>
     <div class="tarjeta">
-      <h2>Captura</h2>
-      <label for="observador">Quién observa</label>
-      <input type="text" id="observador" placeholder="Field User 01" value="Field User 01">
-      <label for="texto">Lo que vio (dictado o escrito)</label>
-      <textarea id="texto" placeholder="Estoy en Hospital DemoCare Pacific, en Panamá. Tienen dos resonadores y un tomógrafo. Uno de los resonadores parece de unos ocho años."></textarea>
-      <div class="fila">
-        <button id="grabar">🎙 Grabar</button>
-        <button class="sec" id="subir">Subir audio</button>
-        <input type="file" id="archivo" accept=".wav,.mp3,audio/wav,audio/mpeg" class="oculto">
-        <button class="sec" id="analizar">Analizar texto</button>
-        <button class="sec" id="foto">📷 Foto de la placa</button>
-        <input type="file" id="imagen" accept="image/*" capture="environment" class="oculto">
+      <h2>
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        </span>
+        Captura
+      </h2>
+      <div class="cuerpo">
+        <div>
+          <label for="observador">Quién observa</label>
+          <input type="text" id="observador" placeholder="Field User 01" value="Field User 01">
+        </div>
+
+        <div>
+          <label for="texto">Lo que vio (dictado o escrito)</label>
+          <div class="consola">
+            <textarea id="texto" placeholder="Presiona Grabar y cuenta lo que viste…"></textarea>
+            <span class="rec" id="rec" aria-hidden="true"><span>rec</span><i></i><i></i><i></i><i></i></span>
+          </div>
+        </div>
+
+        <div class="botones">
+          <button id="grabar">
+            <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v4"/></svg>
+            Grabar
+          </button>
+          <button class="sec" id="analizar">Analizar texto</button>
+          <button class="sec" id="subir">Subir audio</button>
+          <button class="sec" id="foto">
+            <svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg>
+            Foto de la placa
+          </button>
+          <input type="file" id="archivo" accept=".wav,.mp3,audio/wav,audio/mpeg" class="oculto">
+          <input type="file" id="imagen" accept="image/*" capture="environment" class="oculto">
+        </div>
+
+        <div class="fila">
+          <label for="mic" style="margin:0">Micrófono</label>
+          <select id="mic" style="width:auto;flex:1;min-width:140px"><option value="">predeterminado</option></select>
+          <div class="nivel" title="nivel del micrófono mientras grabas"><i id="nivelBarra"></i></div>
+        </div>
+        <div class="estado" id="estado"></div>
       </div>
-      <div class="fila" style="margin-top:12px">
-        <label for="mic" style="margin:0">Micrófono</label>
-        <select id="mic"><option value="">predeterminado</option></select>
-        <div class="nivel" title="nivel del micrófono mientras grabas"><i id="nivelBarra"></i></div>
-      </div>
-      <div class="estado" id="estado"></div>
     </div>
 
     <div class="tarjeta oculto" id="tarjetaPlaca">
-      <h2>Placa del equipo</h2>
-      <div id="placaCampos"></div>
-      <div class="fila">
-        <button id="aplicarPlaca">Aplicar a la observación</button>
-        <span class="estado" id="placaEstado"></span>
+      <h2>
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h4M7 14h10M15 10h2"/></svg>
+        </span>
+        Placa del equipo
+      </h2>
+      <div class="cuerpo">
+        <div id="placaCampos"></div>
+        <div class="fila">
+          <button id="aplicarPlaca">Aplicar a la observación</button>
+          <span class="estado" id="placaEstado"></span>
+        </div>
+        <details><summary>Lo que leyó VisionPsy, tal cual</summary><pre id="placaTexto"></pre></details>
       </div>
-      <details><summary>Lo que leyó VisionPsy, tal cual</summary><pre id="placaTexto"></pre></details>
     </div>
 
     <div class="tarjeta oculto" id="resultado">
-      <h2>Lo que entendió</h2>
-      <div id="transcripcion" class="estado"></div>
-      <div id="lugar" style="margin:6px 0 10px"></div>
-      <table>
-        <thead><tr><th>Equipo</th><th>Cantidad</th><th>Marca</th><th>Modelo</th><th>Antigüedad</th><th>Procedencia</th></tr></thead>
-        <tbody id="equipos"></tbody>
-      </table>
-      <div id="descartes" class="aviso descartes oculto"></div>
-      <div id="pregunta" class="aviso pregunta"></div>
-      <div class="fila">
-        <button id="guardar">Guardar observación</button>
-        <span class="estado" id="guardado"></span>
+      <h2>
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h11M4 17h7"/></svg>
+        </span>
+        Lo que entendió
+      </h2>
+      <div class="cuerpo">
+        <div id="transcripcion" class="estado"></div>
+        <div id="lugar"></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Equipo</th><th>Cantidad</th><th>Marca</th><th>Modelo</th><th>Antigüedad</th><th>Procedencia</th></tr></thead>
+            <tbody id="equipos"></tbody>
+          </table>
+        </div>
+        <div id="descartes" class="aviso descartes oculto"></div>
+        <div id="pregunta" class="aviso pregunta"></div>
+        <div class="fila">
+          <button id="guardar">Guardar observación</button>
+          <span class="estado" id="guardado"></span>
+        </div>
+        <details><summary>JSON crudo del modelo y verificado</summary><pre id="crudo"></pre></details>
       </div>
-      <details><summary>JSON crudo del modelo y verificado</summary><pre id="crudo"></pre></details>
     </div>
   </section>
 
   <section>
     <div class="tarjeta">
-      <h2>Cliente 360</h2>
-      <p class="sembrado" id="sembrado" hidden></p>
-      <div id="base"><p class="vacio">Todavía no hay observaciones guardadas.</p></div>
-      <div class="fila" style="justify-content:flex-end;margin-top:18px">
-        <button class="peligro" id="reiniciar">Volver a las observaciones de ejemplo</button>
+      <h2>
+        <span class="ico oscuro" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="8" r="2.5"/><circle cx="11" cy="18" r="2.5"/><path d="M8 7l7.5 1M16.6 10.2L12.6 15.6M8.8 16.4L7 8.4"/></svg>
+        </span>
+        <span>Cliente 360<small>Lo que sabemos de cada hospital, y de dónde salió</small></span>
+      </h2>
+      <div class="cuerpo">
+        <div id="base"><p class="vacio">Todavía no hay observaciones guardadas.</p></div>
       </div>
     </div>
   </section>
 </main>
 
+<div class="tuberia" id="tuberia" hidden>
+  <div class="tuberia-caja">
+    <h3>Trabajando en este equipo</h3>
+    <p>Sin conexión. Los tiempos son los medidos.</p>
+    <div class="paso" id="paso1">
+      <span class="paso-nodo"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-9 2 5h6"/></svg></span>
+      <span class="paso-cuerpo">
+        <span class="paso-fila"><b>Whisper small</b><span id="paso1Estado">en espera</span></span>
+        <span class="paso-barra"><i id="paso1Barra"></i></span>
+      </span>
+    </div>
+    <div class="paso" id="paso2">
+      <span class="paso-nodo"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h9M5 17h11"/></svg></span>
+      <span class="paso-cuerpo">
+        <span class="paso-fila"><b>Qwen3 1.7B</b><span id="paso2Estado">en espera</span></span>
+        <span class="paso-barra"><i id="paso2Barra"></i></span>
+      </span>
+    </div>
+    <div class="paso" id="paso3">
+      <span class="paso-nodo"><svg viewBox="0 0 24 24"><path d="M4 8V5h3M20 8V5h-3M4 16v3h3M20 16v3h-3"/><path d="M4 12h16"/></svg></span>
+      <span class="paso-cuerpo">
+        <span class="paso-fila"><b>VisionPsy 460M</b><span id="paso3Estado">en espera</span></span>
+        <span class="paso-barra"><i id="paso3Barra"></i></span>
+      </span>
+    </div>
+  </div>
+</div>
+
 <script>
 const $ = (id) => document.getElementById(id);
 const estado = (m) => { $("estado").textContent = m; };
+
+/* ---------- la tubería de IA ----------
+   Avisa desde la esquina qué modelo está trabajando y cuánto tardó DE VERDAD. Sin velo
+   y sin robar el ratón: bloquear la pantalla en cada operación es un castigo. Nada de
+   barras inventadas: el número que queda escrito es el medido. */
+const PASOS = { voz: 1, texto: 2, placa: 3 };
+
+function tuberiaAbrir(cual) {
+  [1, 2, 3].forEach((n) => {
+    $("paso" + n).className = "paso";
+    $("paso" + n + "Estado").textContent = "en espera";
+    $("paso" + n + "Barra").style.transform = "scaleX(0)";
+  });
+  const n = PASOS[cual];
+  $("paso" + n).className = "paso activo";
+  $("paso" + n + "Estado").textContent = "trabajando…";
+  $("paso" + n + "Barra").style.transform = "scaleX(1)";
+  $("tuberia").hidden = false;
+  return n;
+}
+
+function tuberiaCerrar(n, ms) {
+  $("paso" + n).className = "paso listo";
+  $("paso" + n + "Estado").textContent = ms ? (ms / 1000).toFixed(1) + " s" : "listo";
+  setTimeout(() => { $("tuberia").hidden = true; }, 1400);
+}
+
+const tuberiaFallo = () => { $("tuberia").hidden = true; };
+
+// La luz de grabando vive con el micrófono, no con un temporizador.
+const grabando = (si) => { $("rec").className = si ? "rec viva" : "rec"; };
 let ultimo = null; // { texto, fuente, json }
 let ultimoResultado = null; // la respuesta entera de /extraer, para repintar tras la placa
 let abierta = null; // fila del 360 abierta (cliente|modalidad)
@@ -264,9 +579,11 @@ $("grabar").onclick = async () => {
     await cargarMicrofonos();
     medidor = medirNivel(stream);
     grabadora = new MediaRecorder(stream); trozos = [];
+    grabando(true);
     grabadora.ondataavailable = (e) => trozos.push(e.data);
     grabadora.onstop = async () => {
       stream.getTracks().forEach((t) => t.stop());
+      grabando(false);
       const pico = medidor.pico(); medidor.parar();
       $("grabar").textContent = "🎙 Grabar"; $("grabar").classList.remove("grabando");
       if (pico < 0.01) { estado(`El micrófono no captó voz (nivel máximo ${pico.toFixed(3)}). Elige otro micrófono en la lista, o revisa en Windows que no esté en silencio.`); return; }
@@ -289,7 +606,9 @@ async function transcribirYAnalizar(blob, fuente) {
     if (rms < 0.003) { estado(`El audio está en silencio (nivel ${rms.toFixed(4)}, ${segundos.toFixed(1)} s). No se transcribe: elige otro micrófono o sube el volumen de entrada en Windows.`); return; }
     const aviso = pico < 0.1 ? ` · micrófono muy bajo (pico ${pico.toFixed(2)}, amplificado ×${ganancia.toFixed(0)}); sube el volumen de entrada en Windows si puedes` : "";
     estado(`Transcribiendo ${segundos.toFixed(1)} s a ${fs} Hz en el dispositivo…${aviso}`);
-    const r = await post("/transcribir", wav, "application/octet-stream");
+    const nVoz = tuberiaAbrir("voz");
+    const r = await post("/transcribir", wav, "application/octet-stream").catch((e) => { tuberiaFallo(); throw e; });
+    tuberiaCerrar(nVoz, r.ms);
     $("texto").value = r.texto;
     if (r.sospechoso) {
       $("resultado").classList.add("oculto");
@@ -309,7 +628,9 @@ async function analizar(fuente) {
   estado("Extrayendo con el modelo local… (unos segundos)");
   $("analizar").disabled = true;
   try {
-    const r = await post("/extraer", JSON.stringify({ texto }));
+    const nTexto = tuberiaAbrir("texto");
+    const r = await post("/extraer", JSON.stringify({ texto })).catch((e) => { tuberiaFallo(); throw e; });
+    tuberiaCerrar(nTexto, r.ms);
     ultimo = { texto, fuente, json: r.json };
     ultimoResultado = r;
     pintarResultado(r);
@@ -360,7 +681,9 @@ $("imagen").onchange = async () => {
   estado("Leyendo la placa con VisionPsy… (la primera foto carga el modelo)");
   $("foto").disabled = true;
   try {
-    const r = await post("/placa", await f.arrayBuffer(), f.type || "image/png");
+    const nPlaca = tuberiaAbrir("placa");
+    const r = await post("/placa", await f.arrayBuffer(), f.type || "image/png").catch((e) => { tuberiaFallo(); throw e; });
+    tuberiaCerrar(nPlaca, r.ms);
     placa = r.campos;
     pintarPlaca(r);
     estado(`Placa leída en ${(r.ms / 1000).toFixed(1)} s.`);
@@ -450,6 +773,7 @@ async function cargarBase() {
   $("modelo").textContent = `${b.modelo} · todo en el dispositivo`;
   if (!b.resumen.length) { $("base").innerHTML = `<p class="vacio">Todavía no hay observaciones guardadas.</p>`; return; }
   $("base").innerHTML = b.resumen.map((c) => `
+    <div class="hospital">
     <div class="cliente-cab"><h3>${esc(c.cliente)}</h3><small>${esc(c.ciudad)} / ${esc(c.pais)} · ${c.observaciones} ${c.observaciones > 1 ? "observaciones" : "observación"}</small></div>
     <table><thead><tr><th>Equipo</th><th>Cantidad</th><th>Marca</th><th>Antigüedad</th><th>Confianza</th></tr></thead><tbody>
     ${c.modalidades.map((m) => {
@@ -464,7 +788,7 @@ async function cargarBase() {
         ${m.conflicto ? `<div class="r" style="color:var(--ambar)"><b style="color:var(--ambar)">Conflicto:</b> las observaciones no coinciden en la cantidad. Se guardan todas; la próxima visita pregunta: ¿son ${m.cantidades.join(" o ")}?</div>` : ""}
       </div></td></tr>` : ""}`;
     }).join("")}
-    </tbody></table>`).join("");
+    </tbody></table></div>`).join("");
   document.querySelectorAll("tr.clic").forEach((tr) => tr.onclick = () => { abierta = abierta === tr.dataset.clave ? null : tr.dataset.clave; cargarBase(); });
 }
 
