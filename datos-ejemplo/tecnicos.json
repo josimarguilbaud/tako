@@ -1,0 +1,29 @@
+[
+  {
+    "id": "T-01",
+    "nombre": "Marta Gómez",
+    "zona": "Panamá y Chiriquí",
+    "origen": "padrón",
+    "alta": "2026-09-01T08:00:00.000Z",
+    "sal": "5d964bc8165d5424bf7e17ea1594d402",
+    "pinHash": "0ecf06125e8171fee2f03a2c54e8af39ac0b1e656b7b05201632841b225b75da"
+  },
+  {
+    "id": "T-02",
+    "nombre": "Luis Ortega",
+    "zona": "Panamá Oeste y Colón",
+    "origen": "padrón",
+    "alta": "2026-09-01T08:00:00.000Z",
+    "sal": "5fb3d702ef36525b5036982bbb5b53b1",
+    "pinHash": "21de226ee04ab911ead00027217a9295b7f7ff5f1e047574919659f19ffe6cee"
+  },
+  {
+    "id": "T-03",
+    "nombre": "Ana Ruiz",
+    "zona": "Azuero y Veraguas",
+    "origen": "padrón",
+    "alta": "2026-09-01T08:00:00.000Z",
+    "sal": "f468e940f2efa6c0682a251149364efd",
+    "pinHash": "e37ac378f6a5e721c7e2cff7f79fb242672de65ac5376945b1891947a0e9fa62"
+  }
+]

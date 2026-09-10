@@ -312,9 +312,155 @@
   .paso-barra i { display: block; height: 100%; width: 100%; background: var(--sello);
                   transform: scaleX(0); transform-origin: left; transition: transform .5s ease }
   .paso.listo .paso-barra i { background: var(--alta) }
+  /* ---------- quién lo vio ----------
+     El lema prometía «quién lo vio» y el quién era un campo de texto con un valor puesto.
+     Esto es lo que lo vuelve verdad: no se captura nada hasta saber quién captura. */
+  .entrada { position: fixed; inset: 0; z-index: 60; background: var(--fondo);
+             background-image: radial-gradient(rgba(148,163,184,.35) 1px, transparent 1px);
+             background-size: 24px 24px; display: grid; place-items: center;
+             padding: 24px; overflow: auto }
+  .entrada-caja { width: min(430px, 100%); background: var(--hoja); border: 1px solid var(--linea);
+                  border-radius: var(--r-l); box-shadow: var(--sombra); padding: 26px 26px 22px }
+  .entrada-marca { display: flex; align-items: center; gap: 10px; margin-bottom: 20px }
+  .entrada-marca .signo { width: 30px; height: 30px; border-radius: 8px; background: var(--sello);
+                          color: #fff; display: grid; place-items: center; flex: none }
+  .entrada-marca svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8;
+                       stroke-linecap: round; stroke-linejoin: round }
+  .entrada-marca b { display: block; font: 700 15px var(--display); letter-spacing: -.01em }
+  .entrada-marca small { color: var(--suave); font-size: 11.5px }
+  .entrada h2 { font: 700 21px/1.25 var(--display); letter-spacing: -.015em; margin-bottom: 5px }
+  .entrada .sub { color: var(--media); font-size: 13.5px; line-height: 1.5; margin-bottom: 17px }
+  .quienes { display: flex; flex-direction: column; gap: 7px; margin-bottom: 15px }
+  .quien { display: flex; align-items: center; gap: 11px; padding: 9px 11px; cursor: pointer;
+           border: 1px solid var(--linea); border-radius: var(--r-m); background: transparent;
+           text-align: left; font: inherit; color: inherit; width: 100%; transition: all .15s ease }
+  .quien:hover { border-color: var(--sello) }
+  .quien.elegido { border-color: var(--sello); background: var(--sello-tenue) }
+  .ini { width: 31px; height: 31px; flex: none; border-radius: 50%; background: var(--sello);
+         color: #fff; display: grid; place-items: center; font: 600 11.5px var(--dato); letter-spacing: .02em }
+  .quien b { display: block; font-size: 14.5px; font-weight: 600 }
+  .quien small { color: var(--suave); font-size: 11.5px }
+  .entrada label { display: block; font: 600 10.5px var(--dato); letter-spacing: .1em;
+                   text-transform: uppercase; color: var(--suave); margin-bottom: 6px }
+  .entrada input { width: 100%; padding: 10px 12px; border: 1px solid var(--linea);
+                   border-radius: var(--r-m); background: var(--hoja); color: var(--tinta);
+                   font: 15px var(--texto); margin-bottom: 13px }
+  .entrada input:focus { outline: 2px solid var(--sello); outline-offset: -1px; border-color: transparent }
+  .entrada input.pin { font: 600 20px/1 var(--dato); letter-spacing: .55em; text-align: center; padding: 12px }
+  .entrada .ancho { width: 100%; justify-content: center; padding: 11px }
+  .entrada .aviso { background: var(--conflicto-f); color: var(--conflicto); border-radius: var(--r-s);
+                    padding: 8px 11px; font-size: 13px; margin-bottom: 12px }
+  .entrada .nota { color: var(--suave); font-size: 11.5px; line-height: 1.5; margin-top: 13px }
+  .entrada .lab { margin-top: 14px; padding-top: 13px; border-top: 1px dashed var(--linea);
+                  color: var(--suave); font-size: 11.5px; line-height: 1.55 }
+  .entrada .lab b { font-family: var(--dato); color: var(--media) }
+  .enlace { background: none; border: 0; padding: 6px 0 0; color: var(--sello); cursor: pointer;
+            font: 13px var(--texto); text-decoration: underline; text-underline-offset: 2px }
+
+  /* Quién está firmando, siempre a la vista: si no se ve, no se piensa en ello. */
+  .yo { display: flex; align-items: center; gap: 8px; padding: 4px 5px 4px 9px;
+        border: 1px solid var(--linea); border-radius: 99px; font-size: 12.5px }
+  .yo .punto { width: 6px; height: 6px; border-radius: 50%; background: var(--alta); flex: none }
+  .yo b { font-weight: 600; white-space: nowrap }
+  .yo button { background: none; border: 0; color: var(--suave); cursor: pointer;
+               font: 11.5px var(--texto); padding: 3px 7px; border-radius: 99px }
+  .yo button:hover { background: var(--linea-f); color: var(--tinta) }
+
+  .firma { display: flex; align-items: center; gap: 11px; padding: 10px 12px;
+           border: 1px solid var(--linea); border-radius: var(--r-m); background: var(--linea-f) }
+  .firma-txt { flex: 1; min-width: 0 }
+  .firma-txt b { display: block; font-size: 14.5px; font-weight: 600 }
+  .firma-txt small { color: var(--suave); font-size: 11.5px }
+  .sellado { display: inline-flex; align-items: center; gap: 5px; flex: none;
+             background: var(--alta-f); color: var(--alta); border-radius: 99px;
+             padding: 3px 9px; font: 600 10px var(--dato); letter-spacing: .08em; text-transform: uppercase }
+  .sellado svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2.4;
+                 stroke-linecap: round; stroke-linejoin: round }
+
+  /* ---------- el contraste ----------
+     Lo único que interrumpe. Interrumpe porque el número de otra persona es justo la
+     información que la persona no tiene y que solo puede resolver estando ahí. */
+  .velo { position: fixed; inset: 0; z-index: 70; background: rgba(15,23,42,.45);
+          display: grid; place-items: center; padding: 22px; overflow: auto }
+  .contraste-caja { width: min(540px, 100%); background: var(--hoja); border-radius: var(--r-l);
+                    box-shadow: 0 24px 60px -18px rgba(15,23,42,.5); padding: 24px }
+  .contraste-caja h3 { font: 700 19px/1.25 var(--display); letter-spacing: -.015em; margin-bottom: 5px }
+  .contraste-caja .sub { color: var(--media); font-size: 13.5px; line-height: 1.5; margin-bottom: 17px }
+  .roce { border: 1px solid var(--linea); border-radius: var(--r-m); padding: 13px; margin-bottom: 10px }
+  .roce.discrepa { border-color: var(--media-c); background: var(--media-f) }
+  .roce-cab { display: flex; align-items: baseline; gap: 9px; margin-bottom: 9px }
+  .roce-cab b { font: 700 14px var(--dato); letter-spacing: .04em }
+  .roce-cab .mio { margin-left: auto; font-size: 13px; color: var(--media) }
+  .roce-cab .mio b { font-family: var(--dato); font-size: 16px; color: var(--tinta) }
+  .otro { font-size: 13px; color: var(--media); padding: 6px 0; border-top: 1px dashed var(--linea) }
+  .otro .n { font: 700 15px var(--dato); color: var(--tinta) }
+  .otro .cita { display: block; color: var(--suave); font-size: 12.5px; font-style: italic; margin-top: 3px }
+  .contraste-pies { display: flex; gap: 9px; justify-content: flex-end; margin-top: 17px }
+
+  /* ---------- el panel ---------- */
+  .tec { display: flex; align-items: center; gap: 12px; padding: 12px 4px;
+         border-bottom: 1px solid var(--linea-f) }
+  .tec:last-child { border-bottom: 0 }
+  .tec-txt { flex: 1; min-width: 0 }
+  .tec-txt b { display: block; font-size: 14.5px; font-weight: 600 }
+  .tec-txt small { color: var(--suave); font-size: 11.5px }
+  .tec-num { text-align: right; min-width: 58px }
+  .tec-num b { display: block; font: 700 16px var(--dato) }
+  .tec-num small { color: var(--suave); font: 9.5px var(--dato); letter-spacing: .09em; text-transform: uppercase }
+  .tec-num.pugna b { color: var(--conflicto) }
+  .tec-num.cero b { color: var(--suave) }
+  .tec.libre .ini { background: var(--suave) }
+  .tec.libre .tec-txt small { color: var(--ambar) }
+
+  /* En una tablet en el pasillo la fila no cabe de una. Se parte: arriba quién es,
+     abajo sus números, que es el orden en que se leen igual. */
+  @media (max-width: 620px) {
+    .tec { flex-wrap: wrap; row-gap: 9px }
+    .tec-txt { flex: 1 0 calc(100% - 44px) }
+    .tec-num { flex: 1; min-width: 0; text-align: left }
+    .tec-num:first-of-type { margin-left: 43px }
+  }
 </style>
 </head>
 <body>
+
+<div class="entrada" id="entrada" hidden>
+  <div class="entrada-caja">
+    <div class="entrada-marca">
+      <span class="signo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+      </span>
+      <span><b>Tako</b><small>Quién lo vio, y cuándo</small></span>
+    </div>
+
+    <div id="entradaLista">
+      <h2>¿Quién eres?</h2>
+      <p class="sub">Cada observación queda firmada con tu nombre y la hora en que la levantaste. Para eso hay que saber quién eres.</p>
+      <div class="quienes" id="quienes"></div>
+      <label for="pin">Tu PIN</label>
+      <input id="pin" class="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+      <p class="aviso" id="entradaError" hidden></p>
+      <button class="ancho" id="entrar">Entrar</button>
+      <p class="nota">El PIN se comprueba en esta computadora, contra un hash con sal. No sale una sola llamada de red, igual que todo lo demás.</p>
+      <button class="enlace" id="verAlta">No estoy en la lista</button>
+      <p class="lab">Este es un laboratorio y los PIN de la cuadrilla de ejemplo son públicos: <b>2468</b> Marta &middot; <b>1357</b> Luis &middot; <b>9024</b> Ana.</p>
+    </div>
+
+    <div id="entradaAlta" hidden>
+      <h2>Darte de alta</h2>
+      <p class="sub">Queda escrito que te registraste en este equipo, y el panel lo enseña distinto a quien venía en el padrón. No es la misma garantía y no se disimula.</p>
+      <label for="altaNombre">Tu nombre</label>
+      <input id="altaNombre" type="text" autocomplete="off" placeholder="Nombre y apellido">
+      <label for="altaZona">Tu zona</label>
+      <input id="altaZona" type="text" autocomplete="off" placeholder="Panamá, Chiriquí…">
+      <label for="altaPin">Un PIN de cuatro dígitos</label>
+      <input id="altaPin" class="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+      <p class="aviso" id="altaError" hidden></p>
+      <button class="ancho" id="darAlta">Darme de alta y entrar</button>
+      <button class="enlace" id="verLista">Volver a la lista</button>
+    </div>
+  </div>
+</div>
 
 <header>
   <div class="barra">
@@ -326,6 +472,7 @@
     <div class="barra-der">
       <span class="modelo" id="modelo">cargando…</span>
       <span class="en-equipo"><i></i>Todo en el dispositivo</span>
+      <span class="yo" id="yo" hidden><i class="punto"></i><b id="yoNombre"></b><button id="salir">Salir</button></span>
     </div>
   </div>
 </header>
@@ -351,8 +498,14 @@
       </h2>
       <div class="cuerpo">
         <div>
-          <label for="observador">Quién observa</label>
-          <input type="text" id="observador" placeholder="Field User 01" value="Field User 01">
+          <label>Quién observa</label>
+          <div class="firma">
+            <span class="ini" id="firmaIni">—</span>
+            <span class="firma-txt"><b id="firmaNombre">Sin identificar</b><small id="firmaZona">Entra con tu PIN para poder guardar</small></span>
+            <span class="sellado" id="firmaSello" hidden>
+              <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>firmada
+            </span>
+          </div>
         </div>
 
         <div>
@@ -444,7 +597,33 @@
       </div>
     </div>
   </section>
+
+  <section>
+    <div class="tarjeta">
+      <h2>
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/><circle cx="10" cy="8" r="3.2"/><path d="M20 19v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.4 5.2a3.2 3.2 0 0 1 0 5.6"/></svg>
+        </span>
+        <span>Quién lo vio<small>Qué cubrió cada quien, y dónde hay dos números</small></span>
+      </h2>
+      <div class="cuerpo">
+        <div id="panel"><p class="vacio">Cargando el padrón…</p></div>
+      </div>
+    </div>
+  </section>
 </main>
+
+<div class="velo" id="velo" hidden>
+  <div class="contraste-caja">
+    <h3 id="contrasteTitulo">Antes de guardar</h3>
+    <p class="sub" id="contrasteSub"></p>
+    <div id="contrasteCuerpo"></div>
+    <div class="contraste-pies">
+      <button class="sec" id="contrasteVolver">Volver a revisar</button>
+      <button id="contrasteSeguir">Guardar así</button>
+    </div>
+  </div>
+</div>
 
 <div class="tuberia" id="tuberia" hidden>
   <div class="tuberia-caja">
@@ -513,8 +692,25 @@ let ultimoResultado = null; // la respuesta entera de /extraer, para repintar tr
 let abierta = null; // fila del 360 abierta (cliente|modalidad)
 
 // ---------- red ----------
-const post = (ruta, cuerpo, tipo = "application/json") => fetch(ruta, { method: "POST", headers: { "content-type": tipo }, body: cuerpo }).then(async (r) => {
-  const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j;
+// La sesión vive en este dispositivo y viaja en una cabecera, nunca en el cuerpo: el
+// nombre de quien firma no puede ser un campo que el navegador rellena a gusto.
+let sesion = localStorage.getItem("tako.sesion") || "";
+let yo = null;
+try { yo = JSON.parse(localStorage.getItem("tako.yo") || "null"); } catch { yo = null; }
+
+class SinSesion extends Error {}
+
+const post = (ruta, cuerpo, tipo = "application/json") => fetch(ruta, {
+  method: "POST",
+  headers: { "content-type": tipo, ...(sesion ? { "x-tako-sesion": sesion } : {}) },
+  body: cuerpo,
+}).then(async (r) => {
+  const j = await r.json();
+  // El servidor guarda las sesiones en memoria: si se reinició, la de aquí ya no vale y
+  // hay que volver a preguntar quién eres en vez de enseñar un error que no dice nada.
+  if (r.status === 401) { olvidar(); throw new SinSesion(j.error || "Entra con tu PIN."); }
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
 });
 
 // ---------- audio: micrófono -> WAV 16 kHz mono ----------
@@ -751,12 +947,156 @@ $("aplicarPlaca").onclick = async () => {
 // ---------- guardar y Cliente 360 ----------
 $("guardar").onclick = async () => {
   if (!ultimo) return;
+  if (!sesion) { $("guardado").textContent = "Entra con tu PIN para poder firmar la observación."; return abrirEntrada(); }
   try {
-    const r = await post("/guardar", JSON.stringify({ observador: $("observador").value, ...ultimo }));
-    $("guardado").textContent = `Guardada como ${r.id}.`;
-    await cargarBase();
-  } catch (e) { $("guardado").textContent = "Error: " + e.message; }
+    // Antes de guardar: qué número puso otra persona en este mismo hospital. Se pregunta
+    // ahora, mientras la persona todavía está ahí y puede ir a contar; no dentro de tres
+    // semanas en una hoja que ya nadie va a verificar.
+    const { contraste } = await post("/contraste", JSON.stringify({ json: ultimo.json }));
+    if (contraste.some((c) => c.discrepa)) return abrirContraste(contraste);
+    await guardarDeVerdad(contraste);
+  } catch (e) { $("guardado").textContent = e instanceof SinSesion ? e.message : "Error: " + e.message; }
 };
+
+async function guardarDeVerdad(contraste = []) {
+  const r = await post("/guardar", JSON.stringify(ultimo));
+  // El mensaje dice EN QUE coincide y EN QUE no. Decir las dos cosas sin decir dónde
+  // suena a que el sistema se contradice, y lo que pasa es que una modalidad cuadra y
+  // otra no.
+  const partes = [`Guardada como ${r.id}, firmada por ${yo?.nombre ?? "ti"}.`];
+  const acuerdos = contraste.filter((c) => !c.discrepa);
+  if (acuerdos.length) {
+    const quienes = [...new Set(acuerdos.flatMap((c) => c.otros.map((o) => o.nombre)))];
+    partes.push(`Coincide en ${acuerdos.map((c) => c.modalidad).join(" y ")} con ${quienes.join(" y ")}.`);
+  }
+  if (r.discrepancias?.length) {
+    const roces = r.discrepancias.map((d) => {
+      const numeros = [...new Set([d.mia, ...d.otros.map((o) => o.cantidad)])].sort((a, b) => a - b);
+      return `${d.modalidad} (${numeros.join(" o ")})`;
+    });
+    partes.push(`Queda anotado el desacuerdo en ${roces.join(" y ")}.`);
+  }
+  $("guardado").textContent = partes.join(" ");
+  await cargarBase();
+}
+
+// ---------- el contraste ----------
+// Es lo único que interrumpe, y interrumpe a propósito: el número de otra persona es la
+// información que quien está capturando no tiene y que solo puede resolver estando ahí.
+function abrirContraste(contraste) {
+  const roces = contraste.filter((c) => c.discrepa).length;
+  $("contrasteTitulo").textContent = roces > 1 ? "Hay dos números en dos sitios" : "Alguien ya contó aquí, y no da lo mismo";
+  $("contrasteSub").textContent = "No es un error tuyo ni suyo. Es justo lo que hay que resolver antes de que se convierta en un dato, y ahora mismo tú eres quien está ahí.";
+  $("contrasteCuerpo").innerHTML = contraste.map((c) => `
+    <div class="roce ${c.discrepa ? "discrepa" : ""}">
+      <div class="roce-cab"><b>${esc(c.modalidad)}</b>${c.discrepa ? "" : `<span class="sellado">coincide</span>`}<span class="mio">tú dices <b>${c.mia}</b></span></div>
+      ${c.otros.map((o) => `<div class="otro">${esc(o.nombre)}${o.verificado ? "" : " (firma sin verificar)"} dijo <span class="n">${o.cantidad}</span> &middot; ${new Date(o.fecha).toLocaleDateString("es-PA", { day: "numeric", month: "long" })} &middot; ${esc(o.obs)}${o.texto ? `<span class="cita">«${esc(o.texto)}»</span>` : ""}</div>`).join("")}
+    </div>`).join("");
+  ultimoContraste = contraste;
+  $("velo").hidden = false;
+}
+let ultimoContraste = [];
+$("contrasteVolver").onclick = () => { $("velo").hidden = true; };
+$("contrasteSeguir").onclick = async () => {
+  $("velo").hidden = true;
+  try { await guardarDeVerdad(ultimoContraste); }
+  catch (e) { $("guardado").textContent = e instanceof SinSesion ? e.message : "Error: " + e.message; }
+};
+
+// ---------- quién eres ----------
+const iniciales = (n) => String(n ?? "").trim().split(/\s+/).slice(0, 2).map((p) => p[0] ?? "").join("").toUpperCase() || "?";
+let elegido = null;
+
+function pintarFirma() {
+  $("yo").hidden = !yo;
+  $("firmaSello").hidden = !yo;
+  if (yo) {
+    $("yoNombre").textContent = yo.nombre;
+    $("firmaIni").textContent = iniciales(yo.nombre);
+    $("firmaNombre").textContent = yo.nombre;
+    $("firmaZona").textContent = `${yo.id} · ${yo.zona ?? "Sin zona"}`;
+  } else {
+    $("firmaIni").textContent = "—";
+    $("firmaNombre").textContent = "Sin identificar";
+    $("firmaZona").textContent = "Entra con tu PIN para poder guardar";
+  }
+}
+
+function olvidar() {
+  sesion = ""; yo = null;
+  localStorage.removeItem("tako.sesion"); localStorage.removeItem("tako.yo");
+  pintarFirma();
+}
+
+function abrirEntrada() {
+  $("entrada").hidden = false;
+  $("entradaLista").hidden = false;
+  $("entradaAlta").hidden = true;
+  $("entradaError").hidden = true;
+  $("pin").value = "";
+  cargarPadron();
+}
+
+async function cargarPadron() {
+  const t = await fetch("/tecnicos").then((r) => r.json());
+  $("quienes").innerHTML = t.padron.map((p) => `
+    <button type="button" class="quien ${elegido === p.id ? "elegido" : ""}" data-id="${esc(p.id)}">
+      <span class="ini">${esc(iniciales(p.nombre))}</span>
+      <span><b>${esc(p.nombre)}</b><small>${esc(p.id)} · ${esc(p.zona ?? "Sin zona")}</small></span>
+    </button>`).join("") || `<p class="vacio">No hay nadie en el padrón de este equipo todavía.</p>`;
+  document.querySelectorAll(".quien").forEach((b) => b.onclick = () => {
+    elegido = b.dataset.id;
+    document.querySelectorAll(".quien").forEach((x) => x.classList.toggle("elegido", x === b));
+    $("pin").focus();
+  });
+  pintarPanel(t.cobertura);
+}
+
+async function entrar(ruta, cuerpo, campoError) {
+  const aviso = $(campoError);
+  try {
+    const r = await fetch(ruta, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(cuerpo) });
+    const j = await r.json();
+    if (!r.ok) { aviso.textContent = j.error || r.statusText; aviso.hidden = false; return; }
+    sesion = j.sesion; yo = j.tecnico;
+    localStorage.setItem("tako.sesion", sesion);
+    localStorage.setItem("tako.yo", JSON.stringify(yo));
+    $("entrada").hidden = true;
+    pintarFirma();
+    await cargarBase();
+  } catch (e) { aviso.textContent = e.message; aviso.hidden = false; }
+}
+
+$("entrar").onclick = () => {
+  if (!elegido) { $("entradaError").textContent = "Primero dinos quién eres."; $("entradaError").hidden = false; return; }
+  entrar("/entrar", { id: elegido, pin: $("pin").value }, "entradaError");
+};
+$("pin").onkeydown = (e) => { if (e.key === "Enter") $("entrar").click(); };
+$("verAlta").onclick = () => { $("entradaLista").hidden = true; $("entradaAlta").hidden = false; $("altaError").hidden = true; };
+$("verLista").onclick = () => { $("entradaAlta").hidden = true; $("entradaLista").hidden = false; };
+$("darAlta").onclick = () => entrar("/registrar", { nombre: $("altaNombre").value, zona: $("altaZona").value, pin: $("altaPin").value }, "altaError");
+$("altaPin").onkeydown = (e) => { if (e.key === "Enter") $("darAlta").click(); };
+$("salir").onclick = async () => { await post("/salir", "{}").catch(() => {}); olvidar(); abrirEntrada(); };
+
+// ---------- el panel ----------
+// Los números salen de las observaciones guardadas, no de un contador aparte: cualquiera
+// de ellos se puede seguir hasta una observación con id, o no debería estar aquí.
+function pintarPanel(cobertura) {
+  if (!cobertura?.length) { $("panel").innerHTML = `<p class="vacio">No hay nadie en el padrón todavía.</p>`; return; }
+  $("panel").innerHTML = cobertura.map((f) => {
+    const como = !f.verificado ? "firma sin verificar, del formato viejo"
+      : f.origen === "alta local" ? "se dio de alta en este equipo"
+      : f.origen ? "venía en el padrón" : "firma verificada";
+    return `<div class="tec ${f.verificado ? "" : "libre"}">
+      <span class="ini">${esc(iniciales(f.nombre))}</span>
+      <div class="tec-txt"><b>${esc(f.nombre)}</b><small>${esc(f.zona ?? "—")} · ${esc(como)}</small></div>
+      <div class="tec-num ${f.observaciones ? "" : "cero"}"><b>${f.observaciones}</b><small>obs</small></div>
+      <div class="tec-num ${f.hospitales.length ? "" : "cero"}"><b>${f.hospitales.length}</b><small>hosp</small></div>
+      <div class="tec-num ${f.conflictos.length ? "pugna" : "cero"}"><b>${f.conflictos.length}</b><small>pugna</small></div>
+      <div class="tec-num cero"><b style="font-size:12px">${f.ultima ? new Date(f.ultima).toLocaleDateString("es-PA", { day: "numeric", month: "short" }) : "—"}</b><small>última</small></div>
+    </div>`;
+  }).join("");
+}
 $("reiniciar").onclick = async () => { if (confirm("¿Borrar lo capturado y volver a las dos observaciones de ejemplo?")) { await post("/reiniciar", "{}"); abierta = null; await cargarBase(); } };
 
 async function cargarBase() {
@@ -784,7 +1124,7 @@ async function cargarBase() {
         <td>${esc(m.marca)}</td><td>${esc(m.edad)}</td>
         <td><span class="chip ${m.confianza}">${m.confianza}</span><span class="porque">${esc(m.porque)}</span></td></tr>
       ${abre ? `<tr><td colspan="5"><div class="rastro"><b style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sello)">Rastro · ${m.reportes.length} reporte${m.reportes.length > 1 ? "s" : ""}</b>
-        ${m.reportes.map((r) => `<div class="r"><b>${esc(r.id)}</b> · ${esc(r.observador)} · ${new Date(r.fecha).toLocaleString("es-PA")} · ${esc(r.fuente)} → <b>${r.cantidad}</b>${r.aproximada ? " aprox." : ""}${r.marcas.length ? " · " + esc(r.marcas.join(", ")) : ""}${r.edades.length ? " · " + esc(r.edades.join(", ")) : ""}<br><i>«${esc(r.texto)}»</i></div>`).join("")}
+        ${m.reportes.map((r) => `<div class="r"><b>${esc(r.id)}</b> · ${esc(r.observador.nombre)}${r.observador.verificado ? "" : " (sin verificar)"} · ${new Date(r.fecha).toLocaleString("es-PA")} · ${esc(r.fuente)} → <b>${r.cantidad}</b>${r.aproximada ? " aprox." : ""}${r.marcas.length ? " · " + esc(r.marcas.join(", ")) : ""}${r.edades.length ? " · " + esc(r.edades.join(", ")) : ""}<br><i>«${esc(r.texto)}»</i></div>`).join("")}
         ${m.conflicto ? `<div class="r" style="color:var(--ambar)"><b style="color:var(--ambar)">Conflicto:</b> las observaciones no coinciden en la cantidad. Se guardan todas; la próxima visita pregunta: ¿son ${m.cantidades.join(" o ")}?</div>` : ""}
       </div></td></tr>` : ""}`;
     }).join("")}
@@ -793,7 +1133,14 @@ async function cargarBase() {
 }
 
 function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+pintarFirma();
 cargarBase();
+// Si nadie ha entrado en este equipo, la primera pregunta es quién eres. Si ya entró
+// alguien, se le cree hasta que el servidor diga que no en la primera petición firmada.
+// Una sola llamada al padrón: abrirEntrada() ya lo carga, y pintarlo dos veces a la vez
+// borra la selección que acabas de hacer con el segundo render.
+if (!sesion) abrirEntrada(); else cargarPadron();
 </script>
 </body>
 </html>

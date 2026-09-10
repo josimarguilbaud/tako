@@ -6,11 +6,13 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, rmSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadModel, transcribe, WHISPER_BASE_Q8_0, WHISPER_SMALL_Q8_0, QWEN3_1_7B_INST_Q4, QWEN3_4B_INST_Q4_K_M, VISIONPSY_NANO_460M_MULTIMODAL_Q4_K_M_1, MMPROJ_VISIONPSY_NANO_460M_MULTIMODAL_Q8_0_1 } from "@qvac/sdk";
-import { extraer, faltantesDe, preguntaDe } from "./extraer.mjs";
+import { extraer, faltantesDe, preguntaDe, cantidadesPorModalidad } from "./extraer.mjs";
 import { leerPlaca } from "./placa.mjs";
 import { transcripcionSospechosa } from "./verificar.mjs";
+import { pinCorrecto, esperaTras, tecnicoPublico, registrar, observadorDe, contrastar, coberturaDe } from "./tecnicos.mjs";
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const DATOS = path.join(DIR, "datos");
@@ -46,6 +48,25 @@ const IDS_SEMBRADOS = new Set(
   existsSync(EJEMPLO) ? JSON.parse(readFileSync(EJEMPLO, "utf-8")).map((o) => o.id) : []
 );
 
+// ---------- el padron ----------
+// Quien puede firmar una observacion en este equipo. Se siembra la primera vez con la
+// cuadrilla de ejemplo; a partir de ahi el archivo es del dispositivo. Las sales y los
+// hashes viven SOLO aqui: al navegador nunca le llega mas que id, nombre y zona.
+const PADRON = path.join(DATOS, "tecnicos.json");
+const PADRON_EJEMPLO = path.join(DIR, "datos-ejemplo", "tecnicos.json");
+function leerPadron() {
+  if (!existsSync(PADRON) && existsSync(PADRON_EJEMPLO)) copyFileSync(PADRON_EJEMPLO, PADRON);
+  return existsSync(PADRON) ? JSON.parse(readFileSync(PADRON, "utf-8")) : [];
+}
+const escribirPadron = (p) => writeFileSync(PADRON, JSON.stringify(p, null, 2));
+
+// La sesion vive en memoria y se muere con el proceso: no hay cookie, no hay disco, no
+// hay red. Existe para que POST /guardar no se pueda firmar con el nombre de otro solo
+// por escribirlo en el cuerpo de la peticion; sin esto la identidad seria decorado.
+const SESIONES = new Map();
+const FALLOS = new Map(); // por tecnico: cuantos PIN malos seguidos, y hasta cuando espera
+const quienEs = (req) => SESIONES.get(String(req.headers["x-tako-sesion"] ?? ""));
+
 console.log("cargando modelos…");
 const t0 = Date.now();
 const whisper = await loadModel({ modelSrc: VOZ_BASE ? WHISPER_BASE_Q8_0 : WHISPER_SMALL_Q8_0, modelConfig: { detect_language: true } });
@@ -75,13 +96,11 @@ function resumen(observaciones) {
     if (c.ciudad === "Unknown" && o.json.ciudad !== "Unknown") c.ciudad = o.json.ciudad;
     if (c.pais === "Unknown" && o.json.pais !== "Unknown") c.pais = o.json.pais;
     c.observaciones++;
-    const total = {};
-    for (const q of o.json.equipos) total[q.modalidad] = (total[q.modalidad] ?? 0) + q.cantidad;
-    for (const [mod, n] of Object.entries(total)) {
+    for (const [mod, n] of Object.entries(cantidadesPorModalidad(o.json))) {
       const filas = o.json.equipos.filter((q) => q.modalidad === mod);
       const m = (c.modalidades[mod] ??= { modalidad: mod, reportes: [] });
       m.reportes.push({
-        id: o.id, observador: o.observador, fecha: o.fecha, fuente: o.fuente, texto: o.texto,
+        id: o.id, observador: observadorDe(o), fecha: o.fecha, fuente: o.fuente, texto: o.texto,
         cantidad: n,
         aproximada: filas.some((q) => q.cantidadAproximada),
         marcas: [...new Set(filas.map((q) => q.marca).filter((x) => x !== "Unknown"))],
@@ -92,7 +111,10 @@ function resumen(observaciones) {
   for (const c of Object.values(porCliente)) {
     for (const m of Object.values(c.modalidades)) {
       const ultimoPorObservador = {};
-      for (const r of m.reportes) if (!ultimoPorObservador[r.observador] || r.fecha > ultimoPorObservador[r.observador].fecha) ultimoPorObservador[r.observador] = r;
+      for (const r of m.reportes) {
+        const q = r.observador.id;
+        if (!ultimoPorObservador[q] || r.fecha > ultimoPorObservador[q].fecha) ultimoPorObservador[q] = r;
+      }
       const ultimos = Object.values(ultimoPorObservador);
       m.observadores = ultimos.length;
       m.cantidades = [...new Set(ultimos.map((r) => r.cantidad))].sort((a, b) => a - b);
@@ -158,6 +180,56 @@ const servidor = http.createServer(async (req, res) => {
       const ejemplos = obs.filter((o) => IDS_SEMBRADOS.has(o.id)).map((o) => o.id);
       return json(res, 200, { modelo: NOMBRE_MODELO, total: obs.length, ejemplos, resumen: resumen(obs) });
     }
+
+    // ---------- quien lo vio ----------
+    // El padron y el panel. Va sin sesion a proposito: para elegir quien eres hay que
+    // poder ver la lista antes de entrar, y aqui no viaja ni una sal ni un hash.
+    if (req.method === "GET" && url.pathname === "/tecnicos") {
+      const padron = leerPadron();
+      return json(res, 200, { padron: padron.map(tecnicoPublico), cobertura: coberturaDe(leer(), padron) });
+    }
+    if (req.method === "POST" && url.pathname === "/entrar") {
+      const { id, pin } = JSON.parse((await cuerpo(req)).toString("utf-8"));
+      const tecnico = leerPadron().find((t) => t.id === id);
+      // Mismo mensaje y mismo camino si el tecnico no existe o si el PIN esta mal: si
+      // fueran distintos, probar ids seria una forma de averiguar quien esta en el padron.
+      const estado = FALLOS.get(id) ?? { fallos: 0, hasta: 0 };
+      const faltan = estado.hasta - Date.now();
+      if (faltan > 0) return json(res, 429, { error: `Demasiados intentos. Espera ${Math.ceil(faltan / 1000)} s.`, esperaMs: faltan });
+      if (!tecnico || !pinCorrecto(tecnico, pin)) {
+        const fallos = estado.fallos + 1;
+        FALLOS.set(id, { fallos, hasta: Date.now() + esperaTras(fallos) });
+        return json(res, 401, { error: "Ese PIN no es." });
+      }
+      FALLOS.delete(id);
+      const sesion = randomBytes(24).toString("hex");
+      SESIONES.set(sesion, { id: tecnico.id, nombre: tecnico.nombre, verificado: true });
+      console.log(`entró ${tecnico.nombre} (${tecnico.id})`);
+      return json(res, 200, { ok: true, sesion, tecnico: tecnicoPublico(tecnico) });
+    }
+    if (req.method === "POST" && url.pathname === "/registrar") {
+      const { nombre, zona, pin } = JSON.parse((await cuerpo(req)).toString("utf-8"));
+      const padron = leerPadron();
+      const r = registrar(padron, { nombre, zona, pin });
+      if (r.error) return json(res, 400, { error: r.error });
+      padron.push(r.tecnico); escribirPadron(padron);
+      const sesion = randomBytes(24).toString("hex");
+      SESIONES.set(sesion, { id: r.tecnico.id, nombre: r.tecnico.nombre, verificado: true });
+      return json(res, 200, { ok: true, sesion, tecnico: tecnicoPublico(r.tecnico) });
+    }
+    if (req.method === "POST" && url.pathname === "/salir") {
+      SESIONES.delete(String(req.headers["x-tako-sesion"] ?? ""));
+      return json(res, 200, { ok: true });
+    }
+    // Lo que el tecnico recibe ANTES de guardar: que numero puso otra persona en ese
+    // mismo hospital y esa misma modalidad. Se pregunta mientras todavia esta parado en
+    // el pasillo y puede ir a contar.
+    if (req.method === "POST" && url.pathname === "/contraste") {
+      const yo = quienEs(req);
+      if (!yo) return json(res, 401, { error: "Entra con tu PIN antes de guardar." });
+      const { json: datos } = JSON.parse((await cuerpo(req)).toString("utf-8"));
+      return json(res, 200, { contraste: contrastar(leer(), datos, yo.id) });
+    }
     if (req.method === "POST" && url.pathname === "/transcribir") {
       const audio = await cuerpo(req);
       // Se guarda la última grabación para poder reproducir un fallo con la voz real.
@@ -175,12 +247,35 @@ const servidor = http.createServer(async (req, res) => {
       return json(res, 200, { ...r, faltantes, pregunta: preguntaDe(faltantes, texto) });
     }
     if (req.method === "POST" && url.pathname === "/guardar") {
-      const { observador, texto, fuente, json: datos } = JSON.parse((await cuerpo(req)).toString("utf-8"));
+      // El observador sale de la SESIÓN, nunca del cuerpo de la petición. Ese era el
+      // agujero: el lema prometía «quién lo vio» y el quién era un campo de texto que
+      // cualquiera reescribía. Si el nombre viniera en el cuerpo, firmar como otro sería
+      // teclearlo.
+      const yo = quienEs(req);
+      if (!yo) return json(res, 401, { error: "Entra con tu PIN antes de guardar." });
+      const { texto, fuente, json: datos } = JSON.parse((await cuerpo(req)).toString("utf-8"));
       if (!datos?.cliente) return json(res, 400, { error: "falta la observación" });
       const obs = leer();
-      const nueva = { id: `OBS-${String(obs.length + 1).padStart(3, "0")}`, fecha: new Date().toISOString(), observador: observador?.trim() || "Sin nombre", fuente: fuente || "texto", texto, json: datos };
+      // Si al guardar ya había otro número puesto por otra persona, queda escrito que se
+      // guardó sabiéndolo. Se calcula aquí y no se acepta del navegador: el desacuerdo no
+      // se resuelve, se fecha.
+      const roce = contrastar(obs, datos, yo.id).filter((c) => c.discrepa);
+      const nueva = {
+        id: `OBS-${String(obs.length + 1).padStart(3, "0")}`,
+        fecha: new Date().toISOString(),
+        observador: yo,
+        fuente: fuente || "texto",
+        texto,
+        json: datos,
+        ...(roce.length ? {
+          discrepancias: roce.map((c) => ({
+            modalidad: c.modalidad, mia: c.mia,
+            otros: c.otros.map((r) => ({ nombre: r.nombre, cantidad: r.cantidad, obs: r.obs })),
+          })),
+        } : {}),
+      };
       obs.push(nueva); escribir(obs);
-      return json(res, 200, { ok: true, id: nueva.id });
+      return json(res, 200, { ok: true, id: nueva.id, discrepancias: nueva.discrepancias ?? [] });
     }
     // Foto de la placa del equipo: la voz casi nunca da marca ni modelo, y la placa
     // además trae la fecha de fabricación, o sea una edad exacta en vez de estimada.

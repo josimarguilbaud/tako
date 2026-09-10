@@ -2,7 +2,11 @@
   {
     "id": "OBS-001",
     "fecha": "2026-09-08T14:20:11.000Z",
-    "observador": "Field User 01",
+    "observador": {
+      "id": "T-01",
+      "nombre": "Marta Gómez",
+      "verificado": true
+    },
     "fuente": "voz",
     "texto": "Estoy en Hospital DemoCare Pacific, en Panama. Tienen dos resonadores y un tomografo. Uno de los resonadores parece de unos ocho anos.",
     "json": {
@@ -45,7 +49,11 @@
   {
     "id": "OBS-002",
     "fecha": "2026-09-09T09:05:44.000Z",
-    "observador": "Sales User 02",
+    "observador": {
+      "id": "T-02",
+      "nombre": "Luis Ortega",
+      "verificado": true
+    },
     "fuente": "voz",
     "texto": "Estuve en Hospital DemoCare Pacific. Creo que tienen tres resonadores y un tomografo.",
     "json": {

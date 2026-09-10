@@ -116,6 +116,7 @@ el primer arranque los carga en memoria. A partir de ahí es rápido.
 ```
 node prueba-cantidades.mjs     # 24 pruebas de la capa de texto, sin modelo
 node prueba-placa-campos.mjs   # 21 pruebas de la capa de la placa, sin modelo
+node prueba-tecnicos.mjs       # 70 pruebas del PIN, el contraste y el panel, sin modelo
 node prueba-extraccion3.mjs    # 13 casos con Qwen3 1.7B (~2,5 min)
 node prueba-placas.mjs         # 4 placas con VisionPsy (~1,5 min)
 ```
@@ -183,6 +184,67 @@ la misma máquina no creen dos marcas.
 parte: la fotografiada se queda con la serie y la fecha, y las demás siguen sin marca ni
 edad, así que el sistema las sigue preguntando.
 
+## Quién lo vio
+
+El lema promete dos cosas y durante un tiempo solo cumplió una. El «cuándo» siempre fue la
+fecha del sistema; el «quién» era un campo de texto con `Field User 01` ya escrito dentro,
+o sea nadie. Un dato que no sabe de quién viene no se puede repreguntar, y el Cliente 360
+entero se apoya en poder decir *quién* dijo qué.
+
+**Ahora se entra con un PIN.** El padrón de técnicos vive en `datos/tecnicos.json` y cada
+uno tiene su propia sal; lo que se guarda es `sha256(sal + pin)`, nunca el PIN. La
+comprobación es en el dispositivo, con `node:crypto`, sin una sola llamada de red. Tras
+tres fallos seguidos la espera sube a 5 s, 15 s, 60 s y 5 min: diez mil combinaciones a
+mano no se prueban, con un script sí.
+
+Hay que decir qué **no** es: un PIN de cuatro dígitos no es el directorio corporativo de
+Philips. En un despliegue real esto lo firma el SSO de la empresa. Es la prueba más fuerte
+que se puede dar sin salir del equipo, y el sistema no aparenta más de lo que tiene:
+
+- Quien venía en el padrón sale como **del padrón**; quien se registró en la tablet sale
+  como **alta local**. No son la misma garantía y el panel no las pinta igual.
+- Las observaciones guardadas antes, con el nombre a mano, siguen ahí y salen marcadas
+  **sin verificar**. No se borran ni se disimulan.
+- El observador lo pone el **servidor desde la sesión**, nunca el cuerpo de la petición. Si
+  viniera en el cuerpo, firmar con el nombre de otro sería teclearlo.
+
+**Y qué recibe el técnico a cambio.** Un formulario solo le quita tiempo; esto le devuelve
+lo que la cuenta ya sabe. Antes de guardar, Tako mira si otra persona puso otro número en
+ese mismo hospital y esa misma modalidad, y se lo dice **mientras todavía está ahí y puede
+ir a contar**:
+
+```
+Alguien ya contó aquí, y no da lo mismo
+MR                                        tú dices 3
+Marta Gómez dijo 2 · 3 de septiembre · OBS-001
+«Dos resonadores y un tomógrafo.»
+      [Volver a revisar]   [Guardar así]
+```
+
+Si decide guardar igual, queda escrito en la observación que se guardó con un desacuerdo
+abierto, con quién y con qué números. El desacuerdo no se resuelve solo: se fecha. Es la
+misma regla que el Cliente 360 aplica desde el principio.
+
+El panel **Quién lo vio** cierra el círculo: cuántas observaciones levantó cada quien, en
+cuántos hospitales, cuándo fue la última y en cuántas pugnas está metido. Todos esos
+números salen de las observaciones guardadas, no de un contador aparte: cualquiera se
+puede seguir hasta una observación con su id.
+
+### La cuadrilla de ejemplo
+
+Esto es un laboratorio, así que los PIN son públicos y están escritos en la propia pantalla
+de entrada:
+
+| Técnico | Zona | PIN |
+|---|---|---|
+| `T-01` Marta Gómez | Panamá y Chiriquí | `2468` |
+| `T-02` Luis Ortega | Panamá Oeste y Colón | `1357` |
+| `T-03` Ana Ruiz | Azuero y Veraguas | `9024` |
+
+Marta y Luis firman las dos observaciones de ejemplo, que son las que no coinciden entre
+sí. Ana arranca en cero: un técnico sin actividad es justo el dato que un gerente de
+cuentas quiere ver. Con «No estoy en la lista» te das de alta en el equipo.
+
 ## Qué hay
 
 | Archivo | Qué hace |
@@ -192,8 +254,9 @@ edad, así que el sistema las sigue preguntando.
 | `extraer.mjs` | Esquema, prompt, extracción y la lógica de repregunta (hoja «Agent Question Logic» de Philips) |
 | `placa.mjs` | La lectura de la placa con VisionPsy y el parseo de sus campos |
 | `clientes.mjs` + `clientes.json` | Emparejar el nombre dicho con la lista de clientes, tolerando erratas |
+| `tecnicos.mjs` | El padrón, el PIN con sal, el contraste con lo que reportaron otros y la cobertura del panel |
 | `placas/generar.mjs` | Genera las placas sintéticas de prueba con su verdad conocida |
-| `datos-ejemplo/` | Las dos observaciones con las que arranca el laboratorio |
+| `datos-ejemplo/` | Las dos observaciones y la cuadrilla con las que arranca el laboratorio |
 
 ## Licencia
 

@@ -123,3 +123,13 @@ export function preguntaDe(faltantes, entrada) {
     case "city": return es ? "¿En qué ciudad está el hospital?" : "Which city is the hospital in?";
   }
 }
+
+// Cuántos equipos por modalidad declara una observación. Vive aquí porque aquí vive la
+// forma del JSON extraído. El Cliente 360 y el contraste con lo que reportaron otros
+// suman lo mismo llamando a esto: sumar por separado en dos sitios es exactamente como
+// nacen los dos números que no cuadran y nadie sabe cuál creer.
+export function cantidadesPorModalidad(json) {
+  const total = {};
+  for (const q of json?.equipos ?? []) total[q.modalidad] = (total[q.modalidad] ?? 0) + q.cantidad;
+  return total;
+}
