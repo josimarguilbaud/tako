@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node servidor.mjs",
-    "pruebas": "node prueba-extraccion3.mjs"
+    "pruebas": "node prueba-cantidades.mjs && node prueba-placa-campos.mjs && node prueba-tecnicos.mjs && node prueba-libro.mjs",
+    "pruebas-modelo": "node prueba-extraccion3.mjs && node prueba-placas.mjs"
   },
   "dependencies": {
     "@qvac/sdk": "^0.18.2"

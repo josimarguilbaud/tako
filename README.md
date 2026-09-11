@@ -67,13 +67,18 @@ Todo pasa por `@qvac/sdk`. No se usa ninguna API remota, ni para inferencia ni p
 
 ## Correr
 
-```
-npm install          # baja los binarios de QVAC (~6 GB, una sola vez)
-node servidor.mjs    # y abrir http://localhost:3210
+Hace falta **Node 20 o superior** (medido en v24) y unos **10 GB** libres.
+
+```bash
+npm install          # los binarios de QVAC: 5,5 GB, una sola vez
+npm run pruebas      # 168 pruebas sin modelo: confirma que el árbol quedó bien
+npm start            # y abrir http://localhost:3210
 ```
 
-La primera vez descarga los modelos del registro de QVAC; necesita internet **una vez**.
-Después funciona sin conexión.
+El primer arranque descarga los modelos del registro de QVAC (4,3 GB) y necesita internet
+**esa vez**. Después funciona sin conexión, que es el punto. Los modelos viven en
+`~/.qvac/models` y **se comparten entre proyectos**: si ya instalaste Alcancía, aquí no se
+vuelven a bajar.
 
 Variantes:
 
@@ -115,11 +120,20 @@ el primer arranque los carga en memoria. A partir de ahí es rápido.
 
 ## Pruebas
 
+```bash
+npm run pruebas          # 168 pruebas deterministas, sin modelo, en milisegundos
+npm run pruebas-modelo   # 13 casos con Qwen3 + 4 placas con VisionPsy (~4 min)
 ```
-node prueba-cantidades.mjs     # 24 pruebas de la capa de texto, sin modelo
-node prueba-placa-campos.mjs   # 21 pruebas de la capa de la placa, sin modelo
-node prueba-tecnicos.mjs       # 74 pruebas del PIN, el contraste y el panel, sin modelo
-node prueba-libro.mjs          # 49 pruebas de la fusión de libros, sin modelo
+
+`npm run pruebas` es lo primero que conviene correr después de instalar: no carga ni un
+modelo, así que dice si el árbol quedó bien sin esperar a que se descarguen 4 GB. Por
+separado:
+
+```bash
+node prueba-cantidades.mjs     # 24 pruebas de la capa de texto
+node prueba-placa-campos.mjs   # 21 pruebas de la capa de la placa
+node prueba-tecnicos.mjs       # 74 del PIN, el contraste y el panel
+node prueba-libro.mjs          # 49 de fundir dos libros
 node prueba-extraccion3.mjs    # 13 casos con Qwen3 1.7B (~2,5 min)
 node prueba-placas.mjs         # 4 placas con VisionPsy (~1,5 min)
 ```
